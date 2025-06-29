@@ -3,19 +3,409 @@
 @tailwind utilities;
 
 :root {
+  /* Base colors */
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* UI element colors */
+  --card-background: #ffffff;
+  --card-foreground: #171717;
+  --card-border: #e5e7eb;
+  --card-hover: #f3f4f6;
+  
+  /* Button colors */
+  --button-background: #3b82f6;
+  --button-foreground: #ffffff;
+  --button-hover: #2563eb;
+  
+  /* Input and form colors */
+  --input-background: #ffffff;
+  --input-foreground: #171717;
+  --input-border: #d1d5db;
+  --input-focus: #3b82f6;
+  --input-focus-ring: rgba(59, 130, 246, 0.2);
+  --input-placeholder: #9ca3af;
+  --input-disabled-bg: #f3f4f6;
+  --input-disabled-fg: #9ca3af;
+  
+  /* Form label colors */
+  --label-foreground: #374151;
+  --label-required: #ef4444;
+  --label-optional: #6b7280;
+  --form-error: #ef4444;
+  --form-success: #10b981;
+  
+  /* Checkbox and radio */
+  --checkbox-background: #ffffff;
+  --checkbox-border: #d1d5db;
+  --checkbox-checked: #3b82f6;
+  --checkbox-focus-ring: rgba(59, 130, 246, 0.2);
+  
+  /* Select dropdown */
+  --select-background: #ffffff;
+  --select-foreground: #171717;
+  --select-border: #d1d5db;
+  --select-focus: #3b82f6;
+  --select-focus-ring: rgba(59, 130, 246, 0.2);
+  --select-chevron: #6b7280;
+  
+  /* Text colors */
+  --text-primary: #171717;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --text-link: #3b82f6;
+  --text-link-hover: #2563eb;
+  
+  /* Status colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  
+  /* Header and navigation */
+  --header-background: #ffffff;
+  --header-foreground: #171717;
+  --header-border: #e5e7eb;
+  
+  /* Dropdown and popover */
+  --dropdown-background: #ffffff;
+  --dropdown-foreground: #171717;
+  --dropdown-border: #e5e7eb;
+  --dropdown-hover: #f3f4f6;
+  
+  /* Table styles */
+  --table-background: #ffffff;
+  --table-header-background: #f9fafb;
+  --table-header-foreground: #374151;
+  --table-cell-foreground: #4b5563;
+  --table-cell-foreground-strong: #111827;
+  --table-border: #e5e7eb;
+  --table-row-hover: #f3f4f6;
+  --table-striped: #f9fafb;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  /* Base colors */
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  
+  /* UI element colors */
+  --card-background: #1a1a1a;
+  --card-foreground: #ededed;
+  --card-border: #2d2d2d;
+  --card-hover: #262626;
+  
+  /* Button colors */
+  --button-background: #2563eb;
+  --button-foreground: #ffffff;
+  --button-hover: #1d4ed8;
+  
+  /* Input and form colors */
+  --input-background: #1a1a1a;
+  --input-foreground: #ededed;
+  --input-border: #404040;
+  --input-focus: #2563eb;
+  --input-focus-ring: rgba(37, 99, 235, 0.2);
+  --input-placeholder: #6b7280;
+  --input-disabled-bg: #262626;
+  --input-disabled-fg: #6b7280;
+  
+  /* Form label colors */
+  --label-foreground: #d1d5db;
+  --label-required: #ef4444;
+  --label-optional: #9ca3af;
+  --form-error: #ef4444;
+  --form-success: #10b981;
+  
+  /* Checkbox and radio */
+  --checkbox-background: #1a1a1a;
+  --checkbox-border: #404040;
+  --checkbox-checked: #2563eb;
+  --checkbox-focus-ring: rgba(37, 99, 235, 0.2);
+  
+  /* Select dropdown */
+  --select-background: #1a1a1a;
+  --select-foreground: #ededed;
+  --select-border: #404040;
+  --select-focus: #2563eb;
+  --select-focus-ring: rgba(37, 99, 235, 0.2);
+  --select-chevron: #9ca3af;
+  
+  /* Text colors */
+  --text-primary: #ededed;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  --text-link: #3b82f6;
+  --text-link-hover: #60a5fa;
+  
+  /* Status colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  
+  /* Header and navigation */
+  --header-background: #0a0a0a;
+  --header-foreground: #ededed;
+  --header-border: #2d2d2d;
+  
+  /* Dropdown and popover */
+  --dropdown-background: #1a1a1a;
+  --dropdown-foreground: #ededed;
+  --dropdown-border: #2d2d2d;
+  --dropdown-hover: #262626;
+  
+  /* Table styles */
+  --table-background: #1a1a1a;
+  --table-header-background: #262626;
+  --table-header-foreground: #d1d5db;
+  --table-cell-foreground: #a3a3a3;
+  --table-cell-foreground-strong: #ededed;
+  --table-border: #2d2d2d;
+  --table-row-hover: #262626;
+  --table-striped: #242424;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Common components with theme support */
+.card {
+  background-color: var(--card-background);
+  color: var(--card-foreground);
+  border-color: var(--card-border);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary {
+  background-color: var(--button-background);
+  color: var(--button-foreground);
+}
+
+.btn-primary:hover {
+  background-color: var(--button-hover);
+}
+
+/* Form element styling with theme support */
+.form-container {
+  background-color: var(--card-background);
+  border-color: var(--card-border);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.form-label {
+  color: var(--label-foreground);
+  font-weight: 500;
+}
+
+.form-label-required::after {
+  content: "*";
+  color: var(--label-required);
+  margin-left: 0.25rem;
+}
+
+.form-label-optional {
+  color: var(--label-optional);
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+}
+
+.form-input, 
+.form-textarea,
+.form-select {
+  background-color: var(--input-background);
+  color: var(--input-foreground);
+  border-color: var(--input-border);
+  border-width: 1px;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-input:focus, 
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
+}
+
+.form-input::placeholder, 
+.form-textarea::placeholder {
+  color: var(--input-placeholder);
+}
+
+.form-input:disabled, 
+.form-textarea:disabled,
+.form-select:disabled {
+  background-color: var(--input-disabled-bg);
+  color: var(--input-disabled-fg);
+  cursor: not-allowed;
+}
+
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+.dark .form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+.form-checkbox,
+.form-radio {
+  appearance: none;
+  background-color: var(--checkbox-background);
+  border: 1px solid var(--checkbox-border);
+  height: 1rem;
+  width: 1rem;
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.form-checkbox {
+  border-radius: 0.25rem;
+}
+
+.form-radio {
+  border-radius: 50%;
+}
+
+.form-checkbox:checked {
+  background-color: var(--checkbox-checked);
+  border-color: var(--checkbox-checked);
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.form-radio:checked {
+  background-color: var(--checkbox-checked);
+  border-color: var(--checkbox-checked);
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.form-checkbox:focus,
+.form-radio:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--checkbox-focus-ring);
+}
+
+.form-error-message {
+  color: var(--form-error);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.form-success-message {
+  color: var(--form-success);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.form-button {
+  background-color: var(--button-background);
+  color: var(--button-foreground);
+  font-weight: 500;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.form-button:hover {
+  background-color: var(--button-hover);
+}
+
+.form-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
+}
+
+.form-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.input {
+  background-color: var(--input-background);
+  color: var(--input-foreground);
+  border-color: var(--input-border);
+}
+
+.input:focus {
+  border-color: var(--input-focus);
+}
+
+.dropdown {
+  background-color: var(--dropdown-background);
+  color: var(--dropdown-foreground);
+  border-color: var(--dropdown-border);
+}
+
+.dropdown-item:hover {
+  background-color: var(--dropdown-hover);
+}
+
+/* Table styles with theme support */
+table {
+  background-color: var(--table-background);
+  color: var(--text-primary);
+  border-color: var(--table-border);
+}
+
+table thead {
+  background-color: var(--table-header-background);
+}
+
+table th {
+  color: var(--table-header-foreground);
+}
+
+table td {
+  color: var(--table-cell-foreground);
+  border-color: var(--table-border);
+}
+
+table tr:hover {
+  background-color: var(--table-row-hover);
+}
+
+table .cell-strong {
+  color: var(--table-cell-foreground-strong);
+}
+
+table tbody tr:nth-child(even) {
+  background-color: var(--table-striped);
+}
+
+/* Ensure all table dividers respect theme */
+.divide-y, .divide-x, table.divide-y > tbody {
+  border-color: var(--table-border) !important;
+}
+
+.divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--table-border) !important;
 }

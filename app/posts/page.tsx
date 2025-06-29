@@ -60,12 +60,12 @@ function PostsList() {
           ) : (
             <ul className="space-y-6 w-full max-w-4xl mx-auto">
               {posts.map((post) => (
-                <li key={post.id} className="border p-6 rounded-lg shadow-md bg-white">
-                  <Link href={`/posts/${post.id}`} className="text-2xl font-semibold text-gray-900 hover:underline">
+                <li key={post.id} className="border p-6 rounded-lg shadow-md">
+                  <Link href={`/posts/${post.id}`} className="text-2xl font-semibold hover:underline">
                     {post.title}
                   </Link>
-                  <p className="text-sm text-gray-500">by {post.author?.name || "Anonymous"}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-sm">by {post.author?.name || "Anonymous"}</p>
+                  <p className="text-xs">
                     {new Date(post.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
@@ -81,12 +81,12 @@ function PostsList() {
           <div className="flex justify-center space-x-4 mt-8">
             {page > 1 && (
               <Link href={`/posts?page=${page - 1}`}>
-                <button className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Previous</button>
+                <button className="px-4 py-2 rounded">Previous</button>
               </Link>
             )}
             {page < totalPages && (
               <Link href={`/posts?page=${page + 1}`}>
-                <button className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Next</button>
+                <button className="px-4 py-2 rounded">Next</button>
               </Link>
             )}
           </div>
@@ -98,7 +98,7 @@ function PostsList() {
 
 export default function PostsPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start p-8">
+    <div className="min-h-screen flex flex-col items-center justify-start p-8">
       <Suspense
         fallback={
           <div className="flex items-center justify-center min-h-screen">
