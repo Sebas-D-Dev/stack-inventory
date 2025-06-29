@@ -13,7 +13,7 @@ export default async function ProductDetail({
 
   // Fetch the product with relations
   const product = await prisma.product.findUnique({
-    where: { id: id }, // Use the string ID directly
+    where: { id },
     include: {
       category: true,
       vendor: true,
