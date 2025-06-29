@@ -1,20 +1,16 @@
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import Form from "next/form";
 
-export default async function ProductDetail({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { id } = params;
+export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const productId = parseInt(id);
 
   // Fetch the product with relations
   const product = await prisma.product.findUnique({
-    where: { id },
+    where: { id: productId },
     include: {
       category: true,
       vendor: true,
@@ -36,7 +32,7 @@ export default async function ProductDetail({
     "use server";
 
     await prisma.product.delete({
-      where: { id },
+      where: { id: productId },
     });
 
     redirect("/products");
@@ -49,206 +45,138 @@ export default async function ProductDetail({
     day: "numeric",
   });
 
-  const updatedAt = new Date(product.updatedAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
   // Determine if stock is low
   const isLowStock = product.quantity <= product.reorderThreshold;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-6 flex justify-between items-center">
-        <Link
-          href="/products"
-          className="text-sm font-medium transition-colors"
-          style={{ color: "var(--text-link)" }}
-        >
-          ← Back to Products
-        </Link>
-
-        <div className="flex space-x-3">
-          <Link
-            href={`/products/${id}/edit`}
-            className="px-4 py-2 rounded-lg transition-colors"
-            style={{
-              backgroundColor: "var(--button-background)",
-              color: "var(--button-foreground)",
-            }}
-          >
-            Edit Product
-          </Link>
-
-          <Form action={deleteProduct}>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-lg transition-colors"
-              style={{
-                backgroundColor: "var(--error)",
-                color: "white",
-              }}
-              onClick={(e) => {
-                if (!confirm("Are you sure you want to delete this product?")) {
-                  e.preventDefault();
-                }
-              }}
-            >
-              Delete
-            </button>
-          </Form>
-        </div>
-      </div>
-
-      <div
-        className="rounded-lg shadow-sm mb-8"
+    <div className="min-h-screen flex flex-col items-center justify-center p-8">
+      <article
+        className="max-w-3xl w-full shadow-lg rounded-lg p-8"
         style={{
           backgroundColor: "var(--card-background)",
           borderColor: "var(--card-border)",
           borderWidth: "1px",
         }}
       >
-        <div
-          className="px-6 py-4 border-b"
-          style={{ borderColor: "var(--card-border)" }}
+        {/* Product Title and SKU */}
+        <h1
+          className="text-4xl font-extrabold mb-2"
+          style={{ color: "var(--text-primary)" }}
         >
-          <h1
-            className="text-2xl font-bold"
-            style={{ color: "var(--text-primary)" }}
-          >
-            {product.name}
-          </h1>
-          <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-            SKU: {product.sku}
-          </p>
-        </div>
+          {product.name}
+        </h1>
+        <p className="text-sm mb-4" style={{ color: "var(--text-secondary)" }}>
+          SKU: {product.sku}
+        </p>
 
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h2
-              className="text-lg font-semibold mb-4"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Product Details
-            </h2>
-
-            <div className="space-y-3">
-              <div>
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Category:
-                </span>
-                <p style={{ color: "var(--text-primary)" }}>
-                  {product.category.name}
-                </p>
-              </div>
-
-              <div>
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Vendor:
-                </span>
-                <p style={{ color: "var(--text-primary)" }}>
-                  {product.vendor.name}
-                </p>
-              </div>
-
-              <div>
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Price:
-                </span>
-                <p style={{ color: "var(--text-primary)" }}>
-                  ${product.price.toFixed(2)}
-                </p>
-              </div>
-            </div>
+        {/* Product Information */}
+        <div className="flex justify-between flex-wrap mb-6">
+          <div style={{ color: "var(--text-secondary)" }}>
+            <span style={{ color: "var(--text-primary)" }}>Price:</span> $
+            {product.price.toFixed(2)}
           </div>
-
-          <div>
-            <h2
-              className="text-lg font-semibold mb-4"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Inventory Status
-            </h2>
-
-            <div className="space-y-3">
-              <div>
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Current Quantity:
-                </span>
-                <p
-                  className={isLowStock ? "text-red-600 font-bold" : ""}
-                  style={!isLowStock ? { color: "var(--text-primary)" } : {}}
-                >
-                  {product.quantity} {isLowStock && "(Low Stock)"}
-                </p>
-              </div>
-
-              <div>
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Reorder Threshold:
-                </span>
-                <p style={{ color: "var(--text-primary)" }}>
-                  {product.reorderThreshold}
-                </p>
-              </div>
-            </div>
+          <div style={{ color: "var(--text-secondary)" }}>
+            <span style={{ color: "var(--text-primary)" }}>Category:</span>{" "}
+            {product.category.name}
+          </div>
+          <div style={{ color: "var(--text-secondary)" }}>
+            <span style={{ color: "var(--text-primary)" }}>Vendor:</span>{" "}
+            {product.vendor.name}
           </div>
         </div>
 
+        {/* Inventory Status */}
         <div
-          className="px-6 py-4 bg-opacity-50"
+          className="mb-6 p-4 rounded-lg"
           style={{
-            backgroundColor: "var(--table-header-background)",
-            borderTop: "1px solid",
-            borderColor: "var(--card-border)",
-          }}
-        >
-          <div className="flex flex-wrap justify-between text-xs">
-            <div style={{ color: "var(--text-muted)" }}>
-              Added by: {product.user ? product.user.name : "Unknown"} on{" "}
-              {createdAt}
-            </div>
-            <div style={{ color: "var(--text-muted)" }}>
-              Last updated: {updatedAt}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {isLowStock && (
-        <div
-          className="rounded-lg p-4 mb-8"
-          style={{
-            backgroundColor: "rgba(239, 68, 68, 0.1)",
-            borderColor: "var(--error)",
+            backgroundColor: isLowStock
+              ? "rgba(239, 68, 68, 0.1)"
+              : "var(--table-header-background)",
+            borderColor: isLowStock ? "var(--error)" : "var(--table-border)",
             borderWidth: "1px",
           }}
         >
-          <h3 className="font-medium mb-2" style={{ color: "var(--error)" }}>
-            Low Stock Alert
-          </h3>
-          <p style={{ color: "var(--text-secondary)" }}>
-            This product is below the reorder threshold. Consider ordering more
-            stock soon.
-          </p>
+          <h2
+            className="text-xl font-semibold mb-2"
+            style={{
+              color: isLowStock ? "var(--error)" : "var(--text-primary)",
+            }}
+          >
+            Inventory Status {isLowStock && "(Low Stock)"}
+          </h2>
+          <div className="flex justify-between">
+            <div>
+              <span style={{ color: "var(--text-secondary)" }}>
+                Current Quantity:
+              </span>{" "}
+              <span
+                className={isLowStock ? "font-bold" : ""}
+                style={{
+                  color: isLowStock ? "var(--error)" : "var(--text-primary)",
+                }}
+              >
+                {product.quantity}
+              </span>
+            </div>
+            <div>
+              <span style={{ color: "var(--text-secondary)" }}>
+                Reorder Threshold:
+              </span>{" "}
+              <span style={{ color: "var(--text-primary)" }}>
+                {product.reorderThreshold}
+              </span>
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Footer Info */}
+        <div className="text-sm" style={{ color: "var(--text-muted)" }}>
+          Added by {product.user ? product.user.name : "Unknown"} on {createdAt}
+        </div>
+      </article>
+
+      {/* Action Buttons */}
+      <div className="mt-6 flex gap-4">
+        <Link
+          href="/products"
+          className="px-4 py-2 rounded-lg transition-colors"
+          style={{
+            backgroundColor: "var(--button-background)",
+            color: "var(--button-foreground)",
+          }}
+        >
+          Back to Products
+        </Link>
+
+        <Link
+          href={`/products/${id}/edit`}
+          className="px-4 py-2 rounded-lg transition-colors"
+          style={{
+            backgroundColor: "var(--button-background)",
+            color: "var(--button-foreground)",
+          }}
+        >
+          Edit Product
+        </Link>
+
+        <form action={deleteProduct}>
+          <button
+            type="submit"
+            className="px-4 py-2 rounded-lg transition-colors"
+            style={{
+              backgroundColor: "var(--error)",
+              color: "white",
+            }}
+            onClick={(e) => {
+              if (!confirm("Are you sure you want to delete this product?")) {
+                e.preventDefault();
+              }
+            }}
+          >
+            Delete Product
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
