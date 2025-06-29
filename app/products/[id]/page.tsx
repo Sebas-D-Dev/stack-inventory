@@ -4,13 +4,16 @@ import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 
-export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProductDetail({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
-  const productId = parseInt(id);
 
   // Fetch the product with relations
   const product = await prisma.product.findUnique({
-    where: { id: productId },
+    where: { id: id }, // Use the string ID directly
     include: {
       category: true,
       vendor: true,
@@ -32,7 +35,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
     "use server";
 
     await prisma.product.delete({
-      where: { id: productId },
+      where: { id: id }, // Use the string ID here too
     });
 
     redirect("/products");
