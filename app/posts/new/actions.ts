@@ -11,7 +11,8 @@ export async function createPost(formData: FormData) {
     throw new Error("You must be logged in to create a post");
   }
 
-  await prisma.post.create({
+  // Create the post
+  const post = await prisma.post.create({
     data: {
       title: formData.get("title") as string,
       content: formData.get("content") as string,
@@ -19,5 +20,16 @@ export async function createPost(formData: FormData) {
     },
   });
 
+  // Log post creation in history
+  await prisma.postHistory.create({
+    data: {
+      postId: post.id,
+      title: post.title,
+      content: post.content || "",
+      action: "CREATE",
+      performedById: session.user.id,
+    }
+  });
+
   redirect("/posts");
-} 
+}
