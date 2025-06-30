@@ -3,11 +3,12 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
-    if (isNaN(id)) {
+    const { id } = await params;
+    const postId = parseInt(id);
+    if (isNaN(postId)) {
       return NextResponse.json(
         { error: "Invalid post ID" },
         { status: 400 }
@@ -15,7 +16,7 @@ export async function GET(
     }
 
     const post = await prisma.post.findUnique({
-      where: { id },
+      where: { id: postId },
       include: {
         author: {
           select: {
