@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation"; // Removed useRouter
 import Form from "next/form";
 import { updatePost } from "./actions";
 import Link from "next/link";
@@ -18,7 +18,7 @@ interface Post {
 
 export default function EditPost() {
   const params = useParams();
-  const router = useRouter();
+  // Removed unused router variable
   const id = Number(params.id);
 
   const [post, setPost] = useState<Post | null>(null);

@@ -33,8 +33,9 @@ function PostsList() {
   // Check if user is an admin
   useEffect(() => {
     if (session?.user) {
-      // You'll need to add a role field to your user object in the session
-      setIsAdmin(session.user.role === "ADMIN");
+      // Type-safe check for the role property
+      const userRole = (session.user as { role?: string }).role;
+      setIsAdmin(userRole === "ADMIN");
     }
   }, [session]);
 

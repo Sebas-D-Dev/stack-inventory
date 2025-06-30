@@ -24,9 +24,12 @@ export async function updatePost(
     throw new Error("Post not found");
   }
 
-  // Check permissions
+  // Check permissions with type safety
   const isOwner = session.user.id === currentPost.authorId;
-  const isAdmin = session.user.role === 'ADMIN';
+  
+  // Type-safe approach to check role
+  const userRole = (session.user as { role?: string }).role;
+  const isAdmin = userRole === 'ADMIN';
   
   if (!isOwner && !isAdmin) {
     throw new Error("Not authorized to edit this post");
