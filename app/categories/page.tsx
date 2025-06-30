@@ -45,9 +45,9 @@ function CategoriesList() {
   return (
     <>
       {isLoading ? (
-        <div className="flex items-center justify-center space-x-2 min-h-[200px]">
-          <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="">Loading...</p>
+        <div className="themed-loading-container">
+          <div className="themed-spinner"></div>
+          <p className="themed-loading-text">Loading categories...</p>
         </div>
       ) : (
         <>
@@ -83,9 +83,9 @@ export default function CategoriesPage() {
     <div className="min-h-screen flex flex-col items-center justify-start p-8">
       <Suspense
         fallback={
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="ml-3">Loading page...</p>
+          <div className="themed-loading-container themed-loading-fullscreen">
+            <div className="themed-spinner"></div>
+            <p className="themed-loading-text">Loading page...</p>
           </div>
         }
       >

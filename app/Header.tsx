@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from "@heroicons/react/24/outline";
+import { usePathname } from "next/navigation";
 
 type Theme = "light" | "dark" | "system";
 
@@ -11,6 +12,10 @@ export default function Header() {
   const { data: session } = useSession();
   const [theme, setTheme] = useState<Theme>("system");
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  
+  // Check if current path is login or register page
+  const isAuthPage = pathname === "/login" || pathname === "/register";
 
   // Update theme when component mounts and when theme changes
   useEffect(() => {
@@ -68,7 +73,7 @@ export default function Header() {
           Superblog
         </Link>
         <div className="flex items-center space-x-4">
-          {/* Theme Switcher */}
+          {/* Theme Switcher - Always visible */}
           <div className="relative">
             <button 
               onClick={() => setIsOpen(!isOpen)}
@@ -119,26 +124,33 @@ export default function Header() {
             )}
           </div>
           
-          <Link 
-            href="/posts" 
-            className="px-4 py-2 rounded-lg transition-colors"
-            style={{
-              backgroundColor: 'var(--button-background)',
-              color: 'var(--button-foreground)'
-            }}
-          >
-            Posts
-          </Link>
-          <Link 
-            href="/dashboard" 
-            className="px-4 py-2 rounded-lg transition-colors"
-            style={{
-              backgroundColor: 'var(--button-background)',
-              color: 'var(--button-foreground)'
-            }}
-          >
-            Dashboard
-          </Link>
+          {/* Navigation links - Only shown when not on auth pages or when signed in */}
+          {(!isAuthPage || session) && (
+            <>
+              <Link 
+                href="/posts" 
+                className="px-4 py-2 rounded-lg transition-colors"
+                style={{
+                  backgroundColor: 'var(--button-background)',
+                  color: 'var(--button-foreground)'
+                }}
+              >
+                Posts
+              </Link>
+              <Link 
+                href="/dashboard" 
+                className="px-4 py-2 rounded-lg transition-colors"
+                style={{
+                  backgroundColor: 'var(--button-background)',
+                  color: 'var(--button-foreground)'
+                }}
+              >
+                Dashboard
+              </Link>
+            </>
+          )}
+
+          {/* Authenticated user section */}
           {session ? (
             <>
               <Link 
@@ -152,6 +164,16 @@ export default function Header() {
                 New Post
               </Link>
               <div className="flex items-center space-x-4">
+                <Link
+                  href="/profile"
+                  className="px-4 py-2 rounded-lg transition-colors"
+                  style={{
+                    backgroundColor: 'var(--button-background)',
+                    color: 'var(--button-foreground)'
+                  }}
+                >
+                  Profile
+                </Link>
                 <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                   {session.user?.name && <div style={{ color: 'var(--text-primary)' }}>{session.user.name}</div>}
                   <div>{session.user?.email}</div>
@@ -169,16 +191,19 @@ export default function Header() {
               </div>
             </>
           ) : (
-            <Link 
-              href="/login" 
-              className="px-4 py-2 rounded-lg transition-colors"
-              style={{
-                backgroundColor: 'var(--button-background)',
-                color: 'var(--button-foreground)'
-              }}
-            >
-              Sign In
-            </Link>
+            // Only show login button when not on an auth page
+            !isAuthPage && (
+              <Link 
+                href="/login" 
+                className="px-4 py-2 rounded-lg transition-colors"
+                style={{
+                  backgroundColor: 'var(--button-background)',
+                  color: 'var(--button-foreground)'
+                }}
+              >
+                Sign In
+              </Link>
+            )
           )}
         </div>
       </nav>

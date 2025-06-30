@@ -2,6 +2,9 @@ export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
+import DeleteButton from "@/components/buttons/DeleteButton";
+import EditButton from "@/components/buttons/EditButton";
+import Link from "next/link";
 
 export default async function Post({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -54,15 +57,23 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
         </div>
       </article>
 
-      {/* Delete Button */}
-      <form action={deletePost} className="mt-6">
-        <button
-          type="submit"
-          className="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors"
+      {/* Action Buttons */}
+      <div className="mt-6 flex gap-4">
+        <Link
+          href="/posts"
+          className="px-4 py-2 rounded-lg transition-colors"
+          style={{
+            backgroundColor: "var(--button-background)",
+            color: "var(--button-foreground)",
+          }}
         >
-          Delete Post
-        </button>
-      </form>
+          Back to Posts
+        </Link>
+        
+        <EditButton editPath={`/posts/${id}/edit`} itemName="post" />
+        
+        <DeleteButton deleteAction={deletePost} itemName="post" />
+      </div>
     </div>
   );
 }

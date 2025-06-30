@@ -409,3 +409,95 @@ table tbody tr:nth-child(even) {
 .divide-y > :not([hidden]) ~ :not([hidden]) {
   border-color: var(--table-border) !important;
 }
+
+/* Theme-aware typography utility classes */
+.themed-label {
+  color: var(--label-foreground);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.themed-input {
+  background-color: var(--input-background);
+  color: var(--input-foreground);
+  border: 1px solid var(--input-border);
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.themed-input:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
+}
+
+.themed-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.themed-span-primary {
+  color: var(--text-primary);
+}
+
+.themed-span-secondary {
+  color: var(--text-secondary);
+}
+
+.themed-span-muted {
+  color: var(--text-muted);
+}
+
+.required-field::after {
+  content: "*";
+  color: var(--label-required);
+  margin-left: 0.25rem;
+}
+
+.themed-card {
+  background-color: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+/* Themed loading spinner */
+.themed-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0.25rem solid var(--button-background);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.themed-spinner-sm {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-width: 0.2rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.themed-loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 12rem;
+}
+
+.themed-loading-text {
+  color: var(--text-secondary);
+  margin-left: 0.75rem;
+}
+
+.themed-loading-fullscreen {
+  min-height: calc(100vh - 10rem);
+}

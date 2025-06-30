@@ -3,6 +3,8 @@ export const dynamic = "force-dynamic"; // This disables SSG and ISR
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import DeleteButton from "@/components/buttons/DeleteButton";
+import EditButton from "@/components/buttons/EditButton";
 
 export default async function ProductDetail({
   params,
@@ -35,7 +37,7 @@ export default async function ProductDetail({
     "use server";
 
     await prisma.product.delete({
-      where: { id: id }, // Use the string ID here too
+      where: { id: id },
     });
 
     redirect("/products");
@@ -151,34 +153,9 @@ export default async function ProductDetail({
           Back to Products
         </Link>
 
-        <Link
-          href={`/products/${id}/edit`}
-          className="px-4 py-2 rounded-lg transition-colors"
-          style={{
-            backgroundColor: "var(--button-background)",
-            color: "var(--button-foreground)",
-          }}
-        >
-          Edit Product
-        </Link>
+        <EditButton editPath={`/products/${id}/edit`} itemName="product" />
 
-        <form action={deleteProduct}>
-          <button
-            type="submit"
-            className="px-4 py-2 rounded-lg transition-colors"
-            style={{
-              backgroundColor: "var(--error)",
-              color: "white",
-            }}
-            onClick={(e) => {
-              if (!confirm("Are you sure you want to delete this product?")) {
-                e.preventDefault();
-              }
-            }}
-          >
-            Delete Product
-          </button>
-        </form>
+        <DeleteButton deleteAction={deleteProduct} itemName="product" />
       </div>
     </div>
   );

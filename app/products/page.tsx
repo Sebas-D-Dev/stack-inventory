@@ -50,15 +50,9 @@ function ProductsList() {
   return (
     <>
       {isLoading ? (
-        <div className="flex items-center justify-center space-x-2 min-h-[200px]">
-          <div
-            className="w-6 h-6 border-4 border-t-transparent rounded-full animate-spin"
-            style={{
-              borderColor: "var(--button-background)",
-              borderTopColor: "transparent",
-            }}
-          ></div>
-          <p style={{ color: "var(--text-secondary)" }}>Loading...</p>
+        <div className="themed-loading-container">
+          <div className="themed-spinner"></div>
+          <p className="themed-loading-text">Loading products...</p>
         </div>
       ) : (
         <>
@@ -230,17 +224,9 @@ export default function ProductsPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Suspense
         fallback={
-          <div className="flex items-center justify-center min-h-screen">
-            <div
-              className="w-10 h-10 border-4 border-t-transparent rounded-full animate-spin"
-              style={{
-                borderColor: "var(--button-background)",
-                borderTopColor: "transparent",
-              }}
-            ></div>
-            <p className="ml-3" style={{ color: "var(--text-secondary)" }}>
-              Loading page...
-            </p>
+          <div className="themed-loading-container themed-loading-fullscreen">
+            <div className="themed-spinner"></div>
+            <p className="themed-loading-text">Loading page...</p>
           </div>
         }
       >

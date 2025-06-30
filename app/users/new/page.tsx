@@ -19,25 +19,22 @@ export default function NewUser() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md mt-12">
-      <h1 className="text-3xl font-bold mb-6">Create New User</h1>
+    <div className="max-w-2xl mx-auto p-6 rounded-lg my-8 themed-card">
+      <h1 className="text-3xl font-bold mb-6 themed-span-primary">Create New User</h1>
       <Form action={createUser} className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-lg font-medium mb-2">Name</label>
+          <label htmlFor="name" className="themed-label">Name</label>
           <input
             type="text"
             id="name"
             name="name"
             placeholder="Enter user name ..."
-            className="w-full px-4 py-2 border rounded-lg"
+            className="themed-input"
           />
         </div>
         <div>
-          <label htmlFor="email" className="flex text-lg font-medium mb-2 items-center">
-            Email 
-            <span className="ml-2 px-2 py-1 text-xs font-semibold text-white bg-gray-500 rounded-lg">
-              Required
-            </span>
+          <label htmlFor="email" className="themed-label required-field">
+            Email
           </label>
           <input
             type="email"
@@ -45,10 +42,10 @@ export default function NewUser() {
             name="email"
             required
             placeholder="Enter user email ..."
-            className="w-full px-4 py-2 border rounded-lg"
+            className="themed-input"
           />
         </div>
-        <button type="submit" className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
+        <button type="submit" className="form-button w-full py-3">
           Create User
         </button>
       </Form>

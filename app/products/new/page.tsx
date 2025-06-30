@@ -49,17 +49,9 @@ export default function NewProduct() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div
-          className="w-10 h-10 border-4 border-t-transparent rounded-full animate-spin"
-          style={{
-            borderColor: "var(--button-background)",
-            borderTopColor: "transparent",
-          }}
-        ></div>
-        <p className="ml-3" style={{ color: "var(--text-secondary)" }}>
-          Loading form...
-        </p>
+      <div className="themed-loading-container themed-loading-fullscreen">
+        <div className="themed-spinner"></div>
+        <p className="themed-loading-text">Loading form...</p>
       </div>
     );
   }
@@ -83,7 +75,7 @@ export default function NewProduct() {
 
       <Form action={createProduct} className="space-y-6">
         <div>
-          <label htmlFor="name" className="form-label form-label-required">
+          <label htmlFor="name" className="themed-label required-field">
             Product Name
           </label>
           <input
@@ -92,12 +84,12 @@ export default function NewProduct() {
             name="name"
             required
             placeholder="Enter product name"
-            className="form-input"
+            className="themed-input"
           />
         </div>
 
         <div>
-          <label htmlFor="sku" className="form-label form-label-required">
+          <label htmlFor="sku" className="themed-label required-field">
             SKU
           </label>
           <input
@@ -106,7 +98,7 @@ export default function NewProduct() {
             name="sku"
             required
             placeholder="Enter unique SKU"
-            className="form-input"
+            className="themed-input"
           />
         </div>
 

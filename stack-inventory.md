@@ -15,25 +15,21 @@ Stack Inventory is an AI-powered inventory management system designed to go beyo
 - **Inventory Insights Dashboard** powered by custom reordering algorithms
 - **Changelog-powered Blog** to explain system decisions and updates
 
-
 ### 🧠 AI-Powered Enhancements
 
 - **Stock Level Forcasting:** Use time-series forecasting (like ARIMA or Prophet via a Python microservice) to predict stock depletion and proactively suggest reorders.
 - **Smart Categorization:** Use an AI model to auto-tag or classify incoming inventory items based on name, supplier, or usage pattern (could be fine-tuned embeddings or OpenAI APIs).
 - **Chat Assistant for Inventory Queries:** Embed a small AI chat module trained on your inventory schema to help users query via natural language (e.g. “Which items expire next month?”).
 
-
 ### 🔗 Integrated Purchase Optimization
 
 - **External Deal Scraper:** Set up a scraper or use affiliate APIs (like Amazon Product API, BestBuy, or even Google Shopping API) to find best offers for low-stock items.
 - **Purchase Intent Workflow:** Automatically create a “pending additions” queue based on price, delivery time, and user approval—a lightweight purchasing assistant!
 
-
 ### ⚙️ Algorithmic Backbone
 
 - **Custom Reordering Algorithm:** Instead of static thresholds, use a weighted scoring system: sales frequency, lead time, seasonal trends.
 - **Clustered Product Analysis:** Use k-means or DBSCAN to group inventory items by usage, pricing, or category for better dashboard insights.
-
 
 ### 📰 Blog Template Twist
 
