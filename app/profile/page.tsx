@@ -20,13 +20,14 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (session?.user) {
-      setFormData({
-        ...formData,
+      // Use functional update to avoid dependency on formData
+      setFormData((prevData) => ({
+        ...prevData,
         name: session.user.name || "",
         email: session.user.email || "",
-      });
+      }));
     }
-  }, [session]);
+  }, [session]); // No need to include formData now
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -40,25 +41,31 @@ export default function ProfilePage() {
 
     try {
       // Validate passwords match if provided
-      if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
+      if (
+        formData.newPassword &&
+        formData.newPassword !== formData.confirmPassword
+      ) {
         setMessage({ text: "New passwords do not match", type: "error" });
         setIsLoading(false);
         return;
       }
 
       const result = await updateProfile(formData);
-      
+
       if (result.success) {
         setMessage({ text: "Profile updated successfully", type: "success" });
         // Update the session to reflect changes
         update();
       } else {
-        setMessage({ text: result.message || "Failed to update profile", type: "error" });
+        setMessage({
+          text: result.message || "Failed to update profile",
+          type: "error",
+        });
       }
     } catch (error) {
-      setMessage({ 
-        text: error instanceof Error ? error.message : "An error occurred", 
-        type: "error" 
+      setMessage({
+        text: error instanceof Error ? error.message : "An error occurred",
+        type: "error",
       });
     } finally {
       setIsLoading(false);
@@ -72,19 +79,27 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 rounded-lg my-8 themed-card">
-      <h1 className="text-3xl font-bold mb-6 themed-span-primary">Your Profile</h1>
-      
+      <h1 className="text-3xl font-bold mb-6 themed-span-primary">
+        Your Profile
+      </h1>
+
       {message.text && (
-        <div 
-          className={`mb-4 p-3 rounded ${message.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+        <div
+          className={`mb-4 p-3 rounded ${
+            message.type === "success"
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
+          }`}
         >
           {message.text}
         </div>
       )}
-      
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="name" className="themed-label">Name</label>
+          <label htmlFor="name" className="themed-label">
+            Name
+          </label>
           <input
             type="text"
             id="name"
@@ -94,9 +109,11 @@ export default function ProfilePage() {
             className="themed-input"
           />
         </div>
-        
+
         <div>
-          <label htmlFor="email" className="themed-label">Email</label>
+          <label htmlFor="email" className="themed-label">
+            Email
+          </label>
           <input
             type="email"
             id="email"
@@ -106,16 +123,23 @@ export default function ProfilePage() {
             className="themed-input"
           />
         </div>
-        
+
         <div className="border-t pt-6 mt-6">
-          <h2 className="text-xl font-semibold mb-4 themed-span-primary">Change Password</h2>
-          <p className="text-sm mb-4" style={{ color: "var(--text-secondary)" }}>
+          <h2 className="text-xl font-semibold mb-4 themed-span-primary">
+            Change Password
+          </h2>
+          <p
+            className="text-sm mb-4"
+            style={{ color: "var(--text-secondary)" }}
+          >
             Leave blank if you don&apos;t want to change your password
           </p>
-          
+
           <div className="space-y-4">
             <div>
-              <label htmlFor="currentPassword" className="themed-label">Current Password</label>
+              <label htmlFor="currentPassword" className="themed-label">
+                Current Password
+              </label>
               <input
                 type="password"
                 id="currentPassword"
@@ -125,9 +149,11 @@ export default function ProfilePage() {
                 className="themed-input"
               />
             </div>
-            
+
             <div>
-              <label htmlFor="newPassword" className="themed-label">New Password</label>
+              <label htmlFor="newPassword" className="themed-label">
+                New Password
+              </label>
               <input
                 type="password"
                 id="newPassword"
@@ -137,9 +163,11 @@ export default function ProfilePage() {
                 className="themed-input"
               />
             </div>
-            
+
             <div>
-              <label htmlFor="confirmPassword" className="themed-label">Confirm New Password</label>
+              <label htmlFor="confirmPassword" className="themed-label">
+                Confirm New Password
+              </label>
               <input
                 type="password"
                 id="confirmPassword"
@@ -151,9 +179,9 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
-        
-        <button 
-          type="submit" 
+
+        <button
+          type="submit"
           className="form-button w-full py-3 flex justify-center items-center"
           disabled={isLoading}
         >

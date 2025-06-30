@@ -13,6 +13,13 @@ type ProfileData = {
   confirmPassword: string;
 };
 
+// Define a type for the update data
+type UserUpdateData = {
+  name?: string;
+  email?: string;
+  password?: string;
+};
+
 export async function updateProfile(data: ProfileData) {
   try {
     const session = await getServerSession(authOptions);
@@ -28,8 +35,8 @@ export async function updateProfile(data: ProfileData) {
       return { success: false, message: "User not found" };
     }
 
-    // Prepare the update data
-    const updateData: any = {};
+    // Prepare the update data with proper typing
+    const updateData: UserUpdateData = {};
 
     // Update name if changed
     if (data.name && data.name !== user.name) {
