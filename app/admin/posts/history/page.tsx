@@ -102,13 +102,7 @@ export default async function PostHistoryPage() {
                     className="px-6 py-4 whitespace-nowrap text-sm"
                     style={{ color: "var(--text-primary)" }}
                   >
-                    {new Date(entry.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {new Date(entry.createdAt).toLocaleString()}
                   </td>
                   <td
                     className="px-6 py-4 whitespace-nowrap text-sm"
@@ -124,14 +118,7 @@ export default async function PostHistoryPage() {
                   </td>
                   <td
                     className="px-6 py-4 whitespace-nowrap text-sm"
-                    style={{
-                      color:
-                        entry.action === "DELETE"
-                          ? "var(--error)"
-                          : entry.action === "CREATE"
-                          ? "var(--success)"
-                          : "var(--warning)",
-                    }}
+                    style={{ color: "var(--text-primary)" }}
                   >
                     {entry.action}
                   </td>

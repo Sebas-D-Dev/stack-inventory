@@ -13,17 +13,39 @@ datasource db {
   url      = env("PRISMA_DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
+enum PurchaseStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
 model User {
-  id          String        @id @default(cuid())
-  name        String?
-  email       String        @unique
-  password    String
-  posts       Post[]
-  role        String        @default("USER")
-  products    Product[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  postHistory PostHistory[]
+  id                String              @id @default(cuid())
+  name              String?
+  email             String              @unique
+  password          String
+  role              String              @default("USER")
+  posts             Post[]
+  products          Product[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  postHistory       PostHistory[]
+  inventoryMovements InventoryMovement[]
+  notifications     Notification[]
+  activityLogs      ActivityLog[]
+  requestedOrders   PurchaseOrder[]     @relation("RequestedBy")
+  approvedOrders    PurchaseOrder[]     @relation("ApprovedBy")
+  preferences       Json?               // User preferences as JSON
+  permissions       Permission[]        @relation("UserPermissions")
 }
 
 model Post {
@@ -46,29 +68,50 @@ model Category {
 }
 
 model Vendor {
-  id        String    @id @default(cuid())
-  name      String
-  website   String?
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id             String          @id @default(cuid())
+  name           String
+  website        String?
+  products       Product[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  purchaseOrders PurchaseOrder[]
 }
 
 model Product {
-  id               String   @id @default(cuid())
-  name             String
-  sku              String   @unique
-  quantity         Int
-  price            Float
-  reorderThreshold Int
-  category         Category @relation(fields: [categoryId], references: [id])
-  categoryId       String
-  vendor           Vendor   @relation(fields: [vendorId], references: [id])
-  vendorId         String
-  user             User?    @relation(fields: [userId], references: [id])
-  userId           String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                  String                @id @default(cuid())
+  name                String
+  sku                 String                @unique
+  quantity            Int
+  price               Float
+  reorderThreshold    Int
+  category            Category              @relation(fields: [categoryId], references: [id])
+  categoryId          String
+  vendor              Vendor                @relation(fields: [vendorId], references: [id])
+  vendorId            String
+  user                User?                 @relation(fields: [userId], references: [id])
+  userId              String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  lastRestockDate     DateTime?
+  averageDailyUsage   Float?
+  leadTime            Int?                  // Days typically needed to restock
+  minimumOrderQuantity Int                  @default(1)
+  tags                ProductTag[]          @relation("ProductToTag")
+  supplierProductCode String?               // Supplier's code for this product
+  unitOfMeasure       String                @default("EACH") // "EACH", "KG", "LITER", etc.
+  location            String?               // Storage location
+  barcode             String?               // UPC/EAN barcode
+  discontinued        Boolean               @default(false)
+  notes               String?
+  forecastData        ProductForecast[]
+  usageHistory        ProductUsageHistory[]
+  inventoryMovements  InventoryMovement[]
+  purchaseItems       PurchaseItem[]
+  externalDeals       ExternalDeal[]
+  expirationDate      DateTime?             // For perishable items
+  expiryNotificationSent Boolean            @default(false)
+  sourceRelationships ProductRelationship[] @relation("SourceProducts")
+  targetRelationships ProductRelationship[] @relation("TargetProducts")
 }
 
 model PostHistory {
@@ -76,13 +119,159 @@ model PostHistory {
   postId        Int
   title         String
   content       String?
-  action        String // "CREATE", "UPDATE", "DELETE"
+  action        String   // "CREATE", "UPDATE", "DELETE"
   performedBy   User     @relation(fields: [performedById], references: [id])
   performedById String
   createdAt     DateTime @default(now())
 }
 
-enum Role {
-  ADMIN
-  USER
+model InventoryMovement {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  quantity    Int      // Can be positive (added) or negative (removed)
+  type        String   // "PURCHASE", "SALE", "ADJUSTMENT", "RETURN", etc.
+  reason      String?
+  cost        Float?   // Cost per unit for this transaction
+  reference   String?  // Purchase order #, invoice #, etc.
+  performedBy User     @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime @default(now())
+}
+
+model ProductForecast {
+  id             String   @id @default(cuid())
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id])
+  forecastDate   DateTime
+  predictedUsage Float
+  confidence     Float    // 0-1 confidence score
+  method         String   // "ARIMA", "PROPHET", etc.
+  createdAt      DateTime @default(now())
+}
+
+model ProductUsageHistory {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  date       DateTime
+  quantity   Int
+  createdAt  DateTime @default(now())
+}
+
+model PurchaseOrder {
+  id             String         @id @default(cuid())
+  vendorId       String
+  vendor         Vendor         @relation(fields: [vendorId], references: [id])
+  status         PurchaseStatus @default(DRAFT)
+  items          PurchaseItem[]
+  totalAmount    Float
+  requestedBy    User           @relation("RequestedBy", fields: [requesterId], references: [id])
+  requesterId    String
+  approvedBy     User?          @relation("ApprovedBy", fields: [approverId], references: [id])
+  approverId     String?
+  notes          String?
+  orderDate      DateTime?
+  expectedDate   DateTime?
+  receivedDate   DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model PurchaseItem {
+  id              String        @id @default(cuid())
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  purchaseOrderId String
+  productId       String
+  product         Product       @relation(fields: [productId], references: [id])
+  quantity        Int
+  unitPrice       Float
+  totalPrice      Float
+  received        Int           @default(0) // How many units received so far
+}
+
+model ExternalDeal {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  source      String   // "AMAZON", "BESTBUY", etc.
+  externalUrl String
+  price       Float
+  shipping    Float?
+  inStock     Boolean  @default(true)
+  lastChecked DateTime @default(now())
+}
+
+model ProductTag {
+  id        String    @id @default(cuid())
+  name      String
+  products  Product[] @relation("ProductToTag")
+  source    String    // "MANUAL", "AI", etc.
+  createdAt DateTime  @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  type      String   // "LOW_STOCK", "ORDER_APPROVED", etc.
+  read      Boolean  @default(false)
+  relatedId String?  // ID of related entity (productId, orderId, etc.)
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  action      String
+  entityType  String   // "PRODUCT", "ORDER", etc.
+  entityId    String
+  details     String?  // JSON string with details
+  createdAt   DateTime @default(now())
+}
+
+// New models for additional functionality
+
+model ProductRelationship {
+  id            String   @id @default(cuid())
+  sourceProduct Product  @relation("SourceProducts", fields: [sourceId], references: [id])
+  sourceId      String
+  targetProduct Product  @relation("TargetProducts", fields: [targetId], references: [id])
+  targetId      String
+  relationType  String   // "ACCESSORY", "REPLACEMENT", "COMPONENT", etc.
+  createdAt     DateTime @default(now())
+
+  @@unique([sourceId, targetId, relationType])
+}
+
+model AIInsight {
+  id          String   @id @default(cuid())
+  entityType  String   // "PRODUCT", "CATEGORY", "VENDOR", etc.
+  entityId    String
+  insightType String   // "RECOMMENDATION", "ANOMALY", "TREND", etc.
+  content     String
+  confidence  Float    // 0-1 confidence score
+  applied     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  users       User[]   @relation("UserPermissions")
+  createdAt   DateTime @default(now())
+}
+
+model Webhook {
+  id          String   @id @default(cuid())
+  url         String
+  secret      String
+  eventTypes  String[] // ["PRODUCT.CREATED", "ORDER.UPDATED", etc.]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

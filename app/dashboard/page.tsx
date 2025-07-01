@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
-import { Suspense } from 'react';
-import Link from 'next/link';
-
-const prisma = new PrismaClient();
+import { Suspense } from "react";
+import Link from "next/link";
+import prisma from "@/lib/prisma";
 
 // Loading component for the dashboard
 function DashboardLoading() {
@@ -21,26 +19,25 @@ export default async function Dashboard() {
     lowStockProducts,
     totalCategories,
     totalVendors,
-    recentProducts
+    recentProducts,
   ] = await Promise.all([
     prisma.product.count(),
-    prisma.product.count({
-      where: {
-        quantity: {
-          lte: prisma.product.fields.reorderThreshold
-        }
-      }
-    }),
+    // Use raw query for low stock comparison
+    prisma.$queryRaw<
+      [{ count: bigint }]
+    >`SELECT COUNT(*) as count FROM "Product" WHERE quantity <= "reorderThreshold"`.then(
+      (result) => Number(result[0]?.count) || 0
+    ),
     prisma.category.count(),
     prisma.vendor.count(),
     prisma.product.findMany({
       take: 5,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: {
         category: true,
-        vendor: true
-      }
-    })
+        vendor: true,
+      },
+    }),
   ]);
 
   return (
@@ -49,25 +46,44 @@ export default async function Dashboard() {
         <h1 className="text-3xl font-bold themed-span-primary">
           Welcome back! 👋
         </h1>
-        <p className="themed-span-secondary">Here&apos;s your inventory overview</p>
+        <p className="themed-span-secondary">
+          Here&apos;s your inventory overview
+        </p>
       </div>
-      
+
       {/* Quick Action Buttons */}
       <div className="mb-8 flex flex-wrap gap-4">
         {/* Create Actions */}
         <div className="flex flex-col gap-2">
-          <h3 className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Create New</h3>
+          <h3
+            className="text-sm font-medium"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Create New
+          </h3>
           <div className="flex flex-wrap gap-2">
-            <Link href="/products/new" className="form-button py-2 px-4 flex items-center">
+            <Link
+              href="/products/new"
+              className="form-button py-2 px-4 flex items-center"
+            >
               <span>Add Product</span>
             </Link>
-            <Link href="/vendors/new" className="form-button py-2 px-4 flex items-center">
+            <Link
+              href="/vendors/new"
+              className="form-button py-2 px-4 flex items-center"
+            >
               <span>Add Vendor</span>
             </Link>
-            <Link href="/categories/new" className="form-button py-2 px-4 flex items-center">
+            <Link
+              href="/categories/new"
+              className="form-button py-2 px-4 flex items-center"
+            >
               <span>Add Category</span>
             </Link>
-            <Link href="/inventory/adjust" className="form-button py-2 px-4 flex items-center">
+            <Link
+              href="/inventory"
+              className="form-button py-2 px-4 flex items-center"
+            >
               <span>Adjust Stock</span>
             </Link>
           </div>
@@ -75,10 +91,15 @@ export default async function Dashboard() {
 
         {/* View Actions */}
         <div className="flex flex-col gap-2">
-          <h3 className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>View Lists</h3>
+          <h3
+            className="text-sm font-medium"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            View Lists
+          </h3>
           <div className="flex flex-wrap gap-2">
-            <Link 
-              href="/products" 
+            <Link
+              href="/products"
               className="py-2 px-4 flex items-center rounded-lg transition-colors"
               style={{
                 backgroundColor: "var(--button-background)",
@@ -87,8 +108,8 @@ export default async function Dashboard() {
             >
               <span>View Products</span>
             </Link>
-            <Link 
-              href="/vendors" 
+            <Link
+              href="/vendors"
               className="py-2 px-4 flex items-center rounded-lg transition-colors"
               style={{
                 backgroundColor: "var(--button-background)",
@@ -97,8 +118,8 @@ export default async function Dashboard() {
             >
               <span>View Vendors</span>
             </Link>
-            <Link 
-              href="/categories" 
+            <Link
+              href="/categories"
               className="py-2 px-4 flex items-center rounded-lg transition-colors"
               style={{
                 backgroundColor: "var(--button-background)",
@@ -114,105 +135,213 @@ export default async function Dashboard() {
       <Suspense fallback={<DashboardLoading />}>
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="p-6 rounded-lg shadow-sm" style={{ 
-            backgroundColor: 'var(--card-background)', 
-            borderColor: 'var(--card-border)',
-            borderWidth: '1px'
-          }}>
-            <h3 className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Total Products</h3>
+          <div
+            className="p-6 rounded-lg shadow-sm"
+            style={{
+              backgroundColor: "var(--card-background)",
+              borderColor: "var(--card-border)",
+              borderWidth: "1px",
+            }}
+          >
+            <h3
+              className="text-sm font-medium"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Total Products
+            </h3>
             <p className="text-3xl font-bold text-blue-600">{totalProducts}</p>
           </div>
-          
-          <div className="p-6 rounded-lg shadow-sm" style={{ 
-            backgroundColor: 'var(--card-background)', 
-            borderColor: 'var(--card-border)',
-            borderWidth: '1px'
-          }}>
-            <h3 className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Low Stock Items</h3>
-            <p className="text-3xl font-bold text-red-600">{lowStockProducts}</p>
+
+          <div
+            className="p-6 rounded-lg shadow-sm"
+            style={{
+              backgroundColor: "var(--card-background)",
+              borderColor: "var(--card-border)",
+              borderWidth: "1px",
+            }}
+          >
+            <h3
+              className="text-sm font-medium"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Low Stock Items
+            </h3>
+            <p className="text-3xl font-bold text-red-600">
+              {lowStockProducts}
+            </p>
           </div>
-          
-          <div className="p-6 rounded-lg shadow-sm" style={{ 
-            backgroundColor: 'var(--card-background)', 
-            borderColor: 'var(--card-border)',
-            borderWidth: '1px'
-          }}>
-            <h3 className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Categories</h3>
-            <p className="text-3xl font-bold text-green-600">{totalCategories}</p>
+
+          <div
+            className="p-6 rounded-lg shadow-sm"
+            style={{
+              backgroundColor: "var(--card-background)",
+              borderColor: "var(--card-border)",
+              borderWidth: "1px",
+            }}
+          >
+            <h3
+              className="text-sm font-medium"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Categories
+            </h3>
+            <p className="text-3xl font-bold text-green-600">
+              {totalCategories}
+            </p>
           </div>
-          
-          <div className="p-6 rounded-lg shadow-sm" style={{ 
-            backgroundColor: 'var(--card-background)', 
-            borderColor: 'var(--card-border)',
-            borderWidth: '1px'
-          }}>
-            <h3 className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Vendors</h3>
+
+          <div
+            className="p-6 rounded-lg shadow-sm"
+            style={{
+              backgroundColor: "var(--card-background)",
+              borderColor: "var(--card-border)",
+              borderWidth: "1px",
+            }}
+          >
+            <h3
+              className="text-sm font-medium"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Vendors
+            </h3>
             <p className="text-3xl font-bold text-purple-600">{totalVendors}</p>
           </div>
         </div>
       </Suspense>
 
       {/* Recent Products */}
-      <Suspense fallback={
-        <div className="rounded-lg shadow-sm p-6" style={{ 
-          backgroundColor: 'var(--card-background)', 
-          borderColor: 'var(--card-border)',
-          borderWidth: '1px'
-        }}>
-          <div className="themed-loading-container">
-            <div className="themed-spinner"></div>
-            <p className="themed-loading-text">Loading recent products...</p>
+      <Suspense
+        fallback={
+          <div
+            className="rounded-lg shadow-sm p-6"
+            style={{
+              backgroundColor: "var(--card-background)",
+              borderColor: "var(--card-border)",
+              borderWidth: "1px",
+            }}
+          >
+            <div className="themed-loading-container">
+              <div className="themed-spinner"></div>
+              <p className="themed-loading-text">Loading recent products...</p>
+            </div>
           </div>
-        </div>
-      }>
-        <div className="rounded-lg shadow-sm" style={{ 
-          backgroundColor: 'var(--card-background)', 
-          borderColor: 'var(--card-border)',
-          borderWidth: '1px'
-        }}>
-          <div className="px-6 py-4" style={{ 
-            borderColor: 'var(--card-border)',
-            borderBottomWidth: '1px'
-          }}>
-            <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Recent Products</h2>
+        }
+      >
+        <div
+          className="rounded-lg shadow-sm"
+          style={{
+            backgroundColor: "var(--card-background)",
+            borderColor: "var(--card-border)",
+            borderWidth: "1px",
+          }}
+        >
+          <div
+            className="px-6 py-4"
+            style={{
+              borderColor: "var(--card-border)",
+              borderBottomWidth: "1px",
+            }}
+          >
+            <h2
+              className="text-lg font-semibold"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Recent Products
+            </h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full" style={{ 
-              backgroundColor: 'var(--table-background)'
-            }}>
-              <thead style={{ backgroundColor: 'var(--table-header-background)' }}>
+            <table
+              className="min-w-full"
+              style={{
+                backgroundColor: "var(--table-background)",
+              }}
+            >
+              <thead
+                style={{ backgroundColor: "var(--table-header-background)" }}
+              >
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--table-header-foreground)' }}>Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--table-header-foreground)' }}>SKU</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--table-header-foreground)' }}>Category</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--table-header-foreground)' }}>Quantity</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--table-header-foreground)' }}>Price</th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
+                    Name
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
+                    SKU
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
+                    Category
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
+                    Quantity
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
+                    Price
+                  </th>
                 </tr>
               </thead>
-              <tbody style={{ 
-                borderColor: 'var(--table-border)',
-                borderTopWidth: '1px'
-              }}>
+              <tbody
+                style={{
+                  borderColor: "var(--table-border)",
+                  borderTopWidth: "1px",
+                }}
+              >
                 {recentProducts.map((product) => (
-                  <tr key={product.id} style={{ 
-                    borderColor: 'var(--table-border)',
-                    borderTopWidth: '1px'
-                  }}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" style={{ color: 'var(--table-cell-foreground-strong)' }}>
+                  <tr
+                    key={product.id}
+                    style={{
+                      borderColor: "var(--table-border)",
+                      borderTopWidth: "1px",
+                    }}
+                  >
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm font-medium"
+                      style={{ color: "var(--table-cell-foreground-strong)" }}
+                    >
                       {product.name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--table-cell-foreground)' }}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm"
+                      style={{ color: "var(--table-cell-foreground)" }}
+                    >
                       {product.sku}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--table-cell-foreground)' }}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm"
+                      style={{ color: "var(--table-cell-foreground)" }}
+                    >
                       {product.category.name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--table-cell-foreground)' }}>
-                      <span className={`${product.quantity <= product.reorderThreshold ? 'text-red-600 font-medium' : ''}`}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm"
+                      style={{ color: "var(--table-cell-foreground)" }}
+                    >
+                      <span
+                        className={`${
+                          product.quantity <= product.reorderThreshold
+                            ? "text-red-600 font-medium"
+                            : ""
+                        }`}
+                      >
                         {product.quantity}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--table-cell-foreground)' }}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm"
+                      style={{ color: "var(--table-cell-foreground)" }}
+                    >
                       ${product.price.toFixed(2)}
                     </td>
                   </tr>

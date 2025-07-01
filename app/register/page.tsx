@@ -13,18 +13,41 @@ export default function RegisterPage() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     try {
       event.preventDefault();
+      setIsLoading(true);
       const formData = new FormData(event.currentTarget);
+      const userData = Object.fromEntries(formData);
+
+      // Check if user already exists
+      const checkResponse = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!checkResponse.ok) {
+        const errorData = await checkResponse.json();
+        setError(errorData.error || "Registration failed");
+        return;
+      }
+
+      // Sign them in with the credentials they just registered with
       const signInResult = await signIn("credentials", {
-        ...Object.fromEntries(formData),
+        email: userData.email,
+        password: userData.password,
+        name: userData.name,
         redirect: false,
       });
 
       if (signInResult?.error) {
-        setError("Failed to sign in after registration");
+        setError(
+          "Registration successful, but failed to sign in. Please try logging in manually."
+        );
         return;
       }
 
-      router.push("/");
+      router.push("/dashboard");
       router.refresh();
     } catch (error) {
       setError(error instanceof Error ? error.message : "Registration failed");

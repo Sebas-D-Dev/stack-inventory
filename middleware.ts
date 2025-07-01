@@ -12,6 +12,9 @@ const protectedPaths = [
   '/products/new',
   '/products/[id]',
   '/categories',
+  '/categories/new',
+  '/profile',
+  '/purchase-order',
   '/',
   // Add other protected routes here
 ];
