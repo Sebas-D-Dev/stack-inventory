@@ -9,7 +9,6 @@ interface Product {
   sku: string;
   quantity: number;
   price: number;
-  reorderThreshold: number;
   category: {
     id: string;
     name: string;
@@ -182,7 +181,7 @@ function ProductsList() {
                       >
                         <span
                           className={`${
-                            product.quantity <= product.reorderThreshold
+                            product.quantity <= 10
                               ? "text-red-600 font-medium"
                               : ""
                           }`}

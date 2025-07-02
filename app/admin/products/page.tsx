@@ -16,18 +16,14 @@ export default async function AdminProductManagement() {
     where: {
       OR: [
         { quantity: { lte: 0 } },
-        {
-          quantity: {
-            lt: prisma.product.fields.reorderThreshold
-          }
-        }
-      ]
+        { quantity: { lte: 10 } }, // Using fixed threshold of 10
+      ],
     },
     include: {
       category: true,
       vendor: true,
     },
-    orderBy: { quantity: 'asc' }
+    orderBy: { quantity: "asc" },
   });
 
   return (
@@ -67,37 +63,76 @@ export default async function AdminProductManagement() {
           >
             Bulk Update
           </Link>
+          <Link
+            href="/admin/products/adjust-prices"
+            className="px-4 py-2 rounded-lg transition-colors"
+            style={{
+              backgroundColor: "var(--button-background)",
+              color: "var(--button-foreground)",
+            }}
+          >
+            Adjust Prices
+          </Link>
         </div>
       </div>
 
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
+        <h2
+          className="text-xl font-semibold mb-4"
+          style={{ color: "var(--text-primary)" }}
+        >
           Products Needing Attention
         </h2>
-        
-        <div className="overflow-x-auto rounded-lg shadow-sm" style={{ backgroundColor: "var(--card-background)" }}>
+
+        <div
+          className="overflow-x-auto rounded-lg shadow-sm"
+          style={{ backgroundColor: "var(--card-background)" }}
+        >
           <table className="min-w-full">
-            <thead style={{ backgroundColor: "var(--table-header-background)" }}>
+            <thead
+              style={{ backgroundColor: "var(--table-header-background)" }}
+            >
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium uppercase"
+                  style={{ color: "var(--table-header-foreground)" }}
+                >
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium uppercase"
+                  style={{ color: "var(--table-header-foreground)" }}
+                >
                   SKU
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium uppercase"
+                  style={{ color: "var(--table-header-foreground)" }}
+                >
                   Category
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium uppercase"
+                  style={{ color: "var(--table-header-foreground)" }}
+                >
                   Vendor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium uppercase"
+                  style={{ color: "var(--table-header-foreground)" }}
+                >
                   Quantity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium uppercase"
+                  style={{ color: "var(--table-header-foreground)" }}
+                >
                   Threshold
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium uppercase"
+                  style={{ color: "var(--table-header-foreground)" }}
+                >
                   Actions
                 </th>
               </tr>
@@ -105,25 +140,49 @@ export default async function AdminProductManagement() {
             <tbody>
               {productsNeedingAttention.map((product) => (
                 <tr key={product.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm font-medium"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {product.name}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {product.sku}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {product.category.name}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {product.vendor.name}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
-                    <span className={product.quantity <= 0 ? "text-red-600 font-bold" : "text-orange-500 font-medium"}>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    <span
+                      className={
+                        product.quantity <= 0
+                          ? "text-red-600 font-bold"
+                          : "text-orange-500 font-medium"
+                      }
+                    >
                       {product.quantity}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
-                    {product.reorderThreshold}
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    {product.minimumOrderQuantity}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                     <Link

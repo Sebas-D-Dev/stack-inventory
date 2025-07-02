@@ -113,7 +113,7 @@ async function main() {
         sku: 'TN-ULTRA-001',
         quantity: 12,
         price: 279.99,
-        reorderThreshold: 5,
+        overrideConstraints: false,
         categoryId: electronics.id,
         vendorId: vendor1.id,
         userId: edward.id,
@@ -133,7 +133,7 @@ async function main() {
         sku: 'TN-MOUSE-101',
         quantity: 45,
         price: 24.99,
-        reorderThreshold: 10,
+        overrideConstraints: false,
         categoryId: electronics.id,
         vendorId: vendor1.id,
         userId: alice.id,
@@ -152,7 +152,7 @@ async function main() {
         sku: 'OP-MAT-901',
         quantity: 18,
         price: 42.0,
-        reorderThreshold: 8,
+        overrideConstraints: false,
         categoryId: office.id,
         vendorId: vendor2.id,
         userId: bob.id,
@@ -170,7 +170,7 @@ async function main() {
         sku: 'HW-HUB-001',
         quantity: 3,
         price: 89.99,
-        reorderThreshold: 5,
+        overrideConstraints: false,
         categoryId: hardware.id,
         vendorId: vendor3.id,
         userId: charlie.id,
@@ -485,6 +485,86 @@ async function main() {
     });
   }
 
+  // Create initial system settings if they don't exist
+  const existingSettings = await prisma.systemSetting.findMany();
+  const existingKeys = existingSettings.map(s => s.key);
+
+  const settingsToCreate = [
+    // Email settings
+    {
+      key: 'emailSender',
+      value: 'noreply@example.com',
+      category: 'email'
+    },
+    {
+      key: 'orderConfirmationTemplate',
+      value: 'Your order #{orderId} has been confirmed.',
+      category: 'email'
+    },
+    {
+      key: 'lowStockAlertTemplate',
+      value: 'Product {productName} is running low on stock.',
+      category: 'email'
+    },
+    
+    // Inventory settings
+    {
+      key: 'globalLowStockThreshold',
+      value: '5',
+      category: 'inventory'
+    },
+    {
+      key: 'criticalStockThreshold',
+      value: '2',
+      category: 'inventory'
+    },
+    {
+      key: 'overstockThreshold',
+      value: '50',
+      category: 'inventory'
+    },
+    
+    // Working hours
+    {
+      key: 'workingDays',
+      value: 'Monday-Friday',
+      category: 'workingHours'
+    },
+    {
+      key: 'workingHoursStart',
+      value: '09:00',
+      category: 'workingHours'
+    },
+    {
+      key: 'workingHoursEnd',
+      value: '17:00',
+      category: 'workingHours'
+    },
+    
+    // Backup settings
+    {
+      key: 'backupFrequency',
+      value: 'daily',
+      category: 'backup'
+    },
+    {
+      key: 'backupTime',
+      value: '00:00',
+      category: 'backup'
+    },
+    {
+      key: 'retentionPeriod',
+      value: '30',
+      category: 'backup'
+    }
+  ].filter(setting => !existingKeys.includes(setting.key));
+
+  if (settingsToCreate.length > 0) {
+    await prisma.systemSetting.createMany({
+      data: settingsToCreate
+    });
+  }
+
   console.log('🌱 Seed completed successfully!');
   console.log('📊 Data created or verified:');
   console.log(`  - ${users.length} users`);
@@ -499,6 +579,7 @@ async function main() {
   console.log(`  - ${purchaseOrder ? 1 : 0} purchase order`);
   console.log(`  - ${dealsToCreate.length} new external deals`);
   console.log(`  - ${logsToCreate.length} new activity logs`);
+  console.log(`  - ${settingsToCreate.length} new system settings`);
 }
 
 main()

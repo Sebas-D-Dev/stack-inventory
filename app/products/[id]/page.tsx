@@ -50,8 +50,8 @@ export default async function ProductDetail({
     day: "numeric",
   });
 
-  // Determine if stock is low
-  const isLowStock = product.quantity <= product.reorderThreshold;
+  // Determine if stock is low (using fixed threshold of 10)
+  const isLowStock = product.quantity <= 10;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
@@ -125,10 +125,10 @@ export default async function ProductDetail({
             </div>
             <div>
               <span style={{ color: "var(--text-secondary)" }}>
-                Reorder Threshold:
+                Minimum Order Quantity:
               </span>{" "}
               <span style={{ color: "var(--text-primary)" }}>
-                {product.reorderThreshold}
+                {product.minimumOrderQuantity}
               </span>
             </div>
           </div>

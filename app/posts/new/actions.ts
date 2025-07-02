@@ -11,12 +11,18 @@ export async function createPost(formData: FormData) {
     throw new Error("You must be logged in to create a post");
   }
 
-  // Create the post
+  // Check if the user is an admin
+  const isAdmin = session.user.isAdmin;
+
+  // Create the post with the appropriate moderation status
+  // Admins' posts are automatically approved
   const post = await prisma.post.create({
     data: {
       title: formData.get("title") as string,
       content: formData.get("content") as string,
       authorId: session.user.id,
+      modStatus: isAdmin ? "APPROVED" : "PENDING",
+      published: isAdmin, // Only publish immediately if admin
     },
   });
 
@@ -30,6 +36,29 @@ export async function createPost(formData: FormData) {
       performedById: session.user.id,
     }
   });
+
+  // If user is not an admin, create a notification for admins
+  if (!isAdmin) {
+    // Find all admin users
+    const admins = await prisma.admin.findMany({
+      select: { userId: true }
+    });
+    
+    // Create notifications for each admin
+    for (const admin of admins) {
+      await prisma.notification.create({
+        data: {
+          userId: admin.userId,
+          message: `New post "${post.title}" requires moderation`,
+          type: "POST_PENDING",
+          relatedId: post.id.toString(),
+        }
+      });
+    }
+    
+    // Redirect to a "pending approval" page instead
+    redirect("/posts/pending");
+  }
 
   redirect("/posts");
 }

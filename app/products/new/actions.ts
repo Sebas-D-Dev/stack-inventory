@@ -16,7 +16,6 @@ export async function createProduct(formData: FormData) {
   const sku = formData.get("sku") as string;
   const quantity = parseInt(formData.get("quantity") as string);
   const price = parseFloat(formData.get("price") as string);
-  const reorderThreshold = parseInt(formData.get("reorderThreshold") as string);
   const categoryId = formData.get("categoryId") as string;
   const vendorId = formData.get("vendorId") as string;
 
@@ -27,7 +26,6 @@ export async function createProduct(formData: FormData) {
       sku,
       quantity,
       price,
-      reorderThreshold,
       categoryId,
       vendorId,
       userId: session.user.id,

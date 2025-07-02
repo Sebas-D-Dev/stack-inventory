@@ -22,12 +22,10 @@ export default async function Dashboard() {
     recentProducts,
   ] = await Promise.all([
     prisma.product.count(),
-    // Use raw query for low stock comparison
-    prisma.$queryRaw<
-      [{ count: bigint }]
-    >`SELECT COUNT(*) as count FROM "Product" WHERE quantity <= "reorderThreshold"`.then(
-      (result) => Number(result[0]?.count) || 0
-    ),
+    // Count products with quantity <= 10 (fixed threshold)
+    prisma.product.count({
+      where: { quantity: { lte: 10 } },
+    }),
     prisma.category.count(),
     prisma.vendor.count(),
     prisma.product.findMany({
@@ -330,7 +328,7 @@ export default async function Dashboard() {
                     >
                       <span
                         className={`${
-                          product.quantity <= product.reorderThreshold
+                          product.quantity <= 10
                             ? "text-red-600 font-medium"
                             : ""
                         }`}
