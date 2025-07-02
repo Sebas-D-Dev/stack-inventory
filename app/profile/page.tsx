@@ -20,14 +20,15 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (session?.user) {
-      // Use functional update to avoid dependency on formData
       setFormData((prevData) => ({
         ...prevData,
         name: session.user.name || "",
         email: session.user.email || "",
       }));
+    } else {
+      router.push("/login");
     }
-  }, [session]); // No need to include formData now
+  }, [session, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -72,9 +73,9 @@ export default function ProfilePage() {
     }
   };
 
+  // Don't check for session here, do it in useEffect
   if (!session) {
-    router.push("/login");
-    return null;
+    return null; // Return null while the useEffect redirects
   }
 
   return (
