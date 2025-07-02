@@ -1,42 +1,42 @@
 "use client";
 
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 
-export default function LoginPage() {
-  const router = useRouter();
+export default function ForgotPasswordPage() {
+  const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     try {
       event.preventDefault();
       setIsLoading(true);
-      const formData = new FormData(event.currentTarget);
-      const callbackUrl = new URLSearchParams(window.location.search).get(
-        "callbackUrl"
-      )
-        ? window.location.origin + new URLSearchParams(window.location.search).get("callbackUrl")
-        : "/";
-      const response = await signIn("credentials", {
-        ...Object.fromEntries(formData),
-        redirect: false,
-        callbackUrl,
+      setError(null);
+      setSuccess(null);
+      
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
       });
 
-      if (response?.error) {
-        setError("Invalid credentials");
-        setIsLoading(false);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Failed to process request");
         return;
       }
 
-      router.push(response?.url || callbackUrl);
-      router.refresh();
+      setSuccess("If an account exists with that email, you will receive password reset instructions.");
+      setEmail("");
+      setSuccess("If an account exists with that email, you will receive password reset instructions.");
+      setEmail("");
     } catch {
-      setError("An error occurred during login");
-      setIsLoading(false);
+      setError("An unexpected error occurred");
     }
   }
 
@@ -45,8 +45,11 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8 themed-card">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold themed-span-primary">
-            Sign in to your account
+            Reset your password
           </h2>
+          <p className="mt-2 text-center text-sm" style={{ color: "var(--text-secondary)" }}>
+            Enter your email address and we&apos;ll send you a link to reset your password.
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md space-y-6">
@@ -61,25 +64,18 @@ export default function LoginPage() {
                 required
                 className="themed-input"
                 placeholder="Email address"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="themed-label">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="themed-input"
-                placeholder="Password"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
           </div>
 
           {error && (
             <div className="text-red-500 text-sm text-center">{error}</div>
+          )}
+          
+          {success && (
+            <div className="text-green-500 text-sm text-center">{success}</div>
           )}
 
           <div>
@@ -91,21 +87,18 @@ export default function LoginPage() {
               {isLoading ? (
                 <>
                   <div className="themed-spinner themed-spinner-sm mr-2"></div>
-                  <span>Signing in...</span>
+                  <span>Sending...</span>
                 </>
               ) : (
-                "Sign in"
+                "Send Reset Link"
               )}
             </button>
           </div>
         </form>
         <div className="text-center space-y-2">
           <div>
-            <Link href="/forgot-password" className="text-text-link hover:text-text-link-hover m-4">
-              Forgot your password?
-            </Link>
-            <Link href="/register" className="text-text-link hover:text-text-link-hover m-4">
-              No account? Register.
+            <Link href="/login" className="text-text-link hover:text-text-link-hover">
+              Back to login
             </Link>
           </div>
         </div>

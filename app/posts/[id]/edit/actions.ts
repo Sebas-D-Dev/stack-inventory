@@ -27,9 +27,8 @@ export async function updatePost(
   // Check permissions with type safety
   const isOwner = session.user.id === currentPost.authorId;
   
-  // Type-safe approach to check role
-  const userRole = (session.user as { role?: string }).role;
-  const isAdmin = userRole === 'ADMIN';
+  // Check if user is admin
+  const isAdmin = session?.user?.isAdmin;
   
   if (!isOwner && !isAdmin) {
     throw new Error("Not authorized to edit this post");

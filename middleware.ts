@@ -20,7 +20,16 @@ const protectedPaths = [
 ];
 
 // Paths that should be accessible to public (no auth)
-const publicPaths = ['/login', '/register', '/api', '/setup'];
+const publicPaths = [
+  '/login', 
+  '/register', 
+  '/api', 
+  '/setup', 
+  '/forgot-password', 
+  '/api/auth/forgot-password',
+  '/reset-password', 
+  '/api/auth/reset-password',
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

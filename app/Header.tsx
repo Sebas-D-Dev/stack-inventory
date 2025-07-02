@@ -19,7 +19,14 @@ export default function Header() {
   const pathname = usePathname();
 
   // Check if current path is login or register page
-  const isAuthPage = pathname === "/login" || pathname === "/register";
+  const authPaths = [
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/reset-password",
+    "/setup"
+  ];
+  const isAuthPage = authPaths.includes(pathname);
 
   // Update theme when component mounts and when theme changes
   useEffect(() => {
@@ -164,6 +171,18 @@ export default function Header() {
               >
                 Dashboard
               </Link>
+              {session?.user?.isAdmin && (
+                <Link
+                  href="/admin/dashboard"
+                  className="px-4 py-2 rounded-lg transition-colors"
+                  style={{
+                  backgroundColor: "var(--button-background)",
+                  color: "var(--button-foreground)",
+                }}
+                >
+                  Admin Dashboard
+                </Link>
+              )}
             </>
           )}
 

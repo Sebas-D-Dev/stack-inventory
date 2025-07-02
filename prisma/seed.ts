@@ -15,7 +15,6 @@ async function main() {
         email: 'alice@example.com',
         name: 'Alice',
         password: await bcrypt.hash('password123', 10),
-        role: 'USER',
       },
     }),
     prisma.user.upsert({
@@ -25,7 +24,6 @@ async function main() {
         email: 'bob@example.com',
         name: 'Bob',
         password: await bcrypt.hash('password123', 10),
-        role: 'USER',
       },
     }),
     prisma.user.upsert({
@@ -35,7 +33,6 @@ async function main() {
         email: 'charlie@example.com',
         name: 'Charlie',
         password: await bcrypt.hash('password123', 10),
-        role: 'USER',
       },
     }),
     prisma.user.upsert({
@@ -45,7 +42,6 @@ async function main() {
         email: 'diana@example.com',
         name: 'Diana',
         password: await bcrypt.hash('password123', 10),
-        role: 'USER',
       },
     }),
     prisma.user.upsert({
@@ -55,12 +51,18 @@ async function main() {
         email: 'edward@example.com',
         name: 'Edward',
         password: await bcrypt.hash('password123', 10),
-        role: 'ADMIN',
       },
     }),
   ]);
 
   const [alice, bob, charlie, diana, edward] = users;
+
+  // Create admin entry in the Admin table - this is how Edward becomes an admin
+  await prisma.admin.upsert({
+    where: { userId: edward.id },
+    update: {},
+    create: { userId: edward.id },
+  });
 
   // Create categories using upsert
   const electronics = await prisma.category.upsert({

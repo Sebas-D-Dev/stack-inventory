@@ -13,7 +13,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
         role: { label: "Role", type: "text" },
       },
-      async authorize(credentials, _req) {
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Invalid credentials");
         }
@@ -21,6 +21,13 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
+        
+        // Check if user exists and is not disabled
+        if (!user || user.isDisabled) {
+          throw new Error("Invalid credentials or account disabled");
+        }
+
+        const admin = user ? await prisma.admin.findUnique({ where: { userId: user.id } }) : null;
 
         if (!user) {
           const newUser = await prisma.user.create({
@@ -28,7 +35,6 @@ export const authOptions: NextAuthOptions = {
               name: credentials.name ?? credentials.email,
               email: credentials.email,
               password: await bcrypt.hash(credentials.password, 10),
-              role: credentials.role ?? "USER",
             },
           });
           
@@ -37,7 +43,8 @@ export const authOptions: NextAuthOptions = {
             id: newUser.id,
             name: newUser.name ?? "", // Ensure name is never null
             email: newUser.email,
-            role: newUser.role,
+            role: credentials.role ?? "USER", // Use provided role or default
+            isAdmin: false,
           };
         }
 
@@ -55,7 +62,8 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           name: user.name ?? "", // Ensure name is never null
           email: user.email,
-          role: user.role,
+          role: admin ? "ADMIN" : "USER", // Determine role based on admin status
+          isAdmin: !!admin,
         };
       },
     }),
@@ -67,19 +75,22 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role;
+        
+        // Check if user is an admin
+        const admin = await prisma.admin.findFirst({
+          where: { userId: user.id }
+        });
+        
+        token.isAdmin = !!admin;
       }
       return token;
     },
     async session({ session, token }) {
-      return { 
-        ...session, 
-        user: { 
-          ...session.user, 
-          id: token.id as string,
-          role: token.role as string | undefined
-        } 
-      };
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.isAdmin = token.isAdmin;
+      }
+      return session;
     },
   },
 };

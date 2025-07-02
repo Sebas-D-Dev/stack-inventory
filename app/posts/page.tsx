@@ -33,9 +33,8 @@ function PostsList() {
   // Check if user is an admin
   useEffect(() => {
     if (session?.user) {
-      // Type-safe check for the role property
-      const userRole = (session.user as { role?: string }).role;
-      setIsAdmin(userRole === "ADMIN");
+      // Check if user is admin
+      setIsAdmin(session.user.isAdmin || false);
     }
   }, [session]);
 

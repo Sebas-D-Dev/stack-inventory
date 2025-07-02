@@ -7,7 +7,7 @@ import Link from "next/link";
 export default async function PostHistoryPage() {
   // Check if user is admin
   const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "ADMIN") {
+  if (!session?.user || !session.user.isAdmin) {
     redirect("/");
   }
 

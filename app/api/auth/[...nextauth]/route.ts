@@ -7,12 +7,13 @@ export { handler as GET, handler as POST };
 
 declare module "next-auth" {
   interface Session {
-    user: { id: string; name: string; email: string; role?: string };
+    user: { id: string; name: string; email: string; isAdmin?: boolean; role?: string };
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     id: string;
+    isAdmin?: boolean;
   }
 }
