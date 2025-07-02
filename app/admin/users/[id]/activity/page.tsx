@@ -4,15 +4,15 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 
-export default async function UserActivityPage({ params }: { params: { id: string } }) {
+export default async function UserActivityPage({ params }: { params: Promise<{ id: string }> }) {
   // Check if user is admin
   const session = await getServerSession(authOptions);
   if (!session?.user || !session.user.isAdmin) {
     redirect("/");
   }
 
-  const userId = params.id;
-  
+  const userId = (await params).id;
+
   // Fetch user details and activity logs
   const [user, activityLogs] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId } }),
