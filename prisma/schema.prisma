@@ -13,25 +13,13 @@ datasource db {
   url      = env("PRISMA_DATABASE_URL")
 }
 
+// User roles and permissions (All roles are User roles with different security levels)
 enum Role {
-  ADMIN
-  USER
-}
-
-enum PurchaseStatus {
-  DRAFT
-  PENDING_APPROVAL
-  APPROVED
-  ORDERED
-  PARTIALLY_RECEIVED
-  RECEIVED
-  CANCELLED
-}
-
-enum ModStatus {
-  PENDING
-  APPROVED
-  REJECTED
+  SUPER_ADMIN // Security Level 4 - Full access to all features and settings, including user management
+  ADMIN // Security Level 3 - Full access to all features and settings
+  MODERATOR // Security Level 2 - Can moderate content and manage users
+  VENDOR // Security Level 1 - Can manage their own products and orders
+  USER // Security Level 0 - Can manage their own profile and view products
 }
 
 model User {
@@ -54,8 +42,10 @@ model User {
   approvedOrders     PurchaseOrder[]     @relation("ApprovedBy")
   preferences        Json? // User preferences as JSON
   permissions        Permission[]        @relation("UserPermissions")
-  admins             Admin[]             @relation("AdminUser")
+  role               Role                @default(USER)
   comments           Comment[]
+  admin              Admin?              @relation("AdminUser")
+
 }
 
 model Post {
@@ -68,7 +58,7 @@ model Post {
   authorId  String?
   author    User?    @relation(fields: [authorId], references: [id])
 
-  // New moderation fields
+  // Moderation fields
   modStatus     ModStatus @default(PENDING)
   modReason     String? // Reason for rejection if applicable
   modReviewedAt DateTime?
@@ -91,6 +81,23 @@ model Comment {
   modReason     String?
   modReviewedAt DateTime?
   modReviewedBy String?
+}
+
+// Product Purchase Statuses
+enum PurchaseStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+enum ModStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model Category {
@@ -312,26 +319,16 @@ model Webhook {
 }
 
 model Admin {
-  id        String   @id @default(cuid())
-  user      User     @relation("AdminUser", fields: [userId], references: [id])
-  userId    String   @unique
-  createdAt DateTime @default(now())
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation("AdminUser", fields: [userId], references: [id])
 }
 
 model SystemSetting {
-  id        String   @id @default(cuid())
-  key       String   @unique
-  value     String   @db.Text
-  category  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model ContentGuideline {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isActive    Boolean  @default(true)
+id        String   @id @default(cuid())
+key       String   @unique
+value     String   @db.Text
+category  String
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
 }

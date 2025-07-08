@@ -12,10 +12,12 @@ interface SystemSetting {
   category: string;
 }
 
+import { canManageSystemSettings } from "@/lib/permissions";
+
 export default async function SystemSettings() {
-  // Check if user is admin
+  // Check if user can manage system settings
   const session = await getServerSession(authOptions);
-  if (!session?.user || !session.user.isAdmin) {
+  if (!session?.user || !canManageSystemSettings(session.user.role || "")) {
     redirect("/");
   }
 
@@ -23,13 +25,16 @@ export default async function SystemSettings() {
   const settings = await prisma.systemSetting.findMany();
 
   // Group settings by category
-  const groupedSettings = settings.reduce<Record<string, SystemSetting[]>>((acc, setting) => {
-    if (!acc[setting.category]) {
-      acc[setting.category] = [];
-    }
-    acc[setting.category].push(setting);
-    return acc;
-  }, {});
+  const groupedSettings = settings.reduce<Record<string, SystemSetting[]>>(
+    (acc, setting) => {
+      if (!acc[setting.category]) {
+        acc[setting.category] = [];
+      }
+      acc[setting.category].push(setting);
+      return acc;
+    },
+    {}
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

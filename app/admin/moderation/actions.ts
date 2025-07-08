@@ -12,10 +12,12 @@ interface ModerationParams {
   reason?: string;
 }
 
+import { canModerateContent } from "@/lib/permissions";
+
 export async function moderateContent({ id, type, action, reason }: ModerationParams) {
-  // Verify the current user is an admin
+  // Verify the current user can moderate content
   const session = await getServerSession(authOptions);
-  if (!session?.user?.isAdmin) {
+  if (!session?.user || !canModerateContent(session.user.role || '')) {
     throw new Error("Unauthorized");
   }
 

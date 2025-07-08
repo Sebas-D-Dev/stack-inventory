@@ -9,6 +9,7 @@ import {
   ComputerDesktopIcon,
 } from "@heroicons/react/24/outline";
 import { usePathname } from "next/navigation";
+import { canAccessAdminFeatures } from "@/lib/permissions";
 
 type Theme = "light" | "dark" | "system";
 
@@ -171,7 +172,37 @@ export default function Header() {
               >
                 Dashboard
               </Link>
-              {session?.user?.isAdmin && (
+import { canAccessAdminFeatures } from "@/lib/permissions";
+
+export default function Header() {
+  const { data: session } = useSession();
+  const pathname = usePathname();
+  
+  const isAuthPage = pathname === "/login" || pathname === "/register" || pathname === "/forgot-password";
+
+  return (
+    <header
+      className="w-full py-4 px-8 border-b transition-colors"
+      style={{
+        backgroundColor: "var(--header-background)",
+        borderColor: "var(--header-border)",
+      }}
+    >
+      <nav className="flex justify-between items-center">
+        <div className="flex items-center space-x-4">
+          {(!isAuthPage || session) && (
+            <>
+              <Link
+                href="/dashboard"
+                className="px-4 py-2 rounded-lg transition-colors"
+                style={{
+                  backgroundColor: "var(--button-background)",
+                  color: "var(--button-foreground)",
+                }}
+              >
+                Dashboard
+              </Link>
+              {session?.user && canAccessAdminFeatures(session.user.role || '') && (
                 <Link
                   href="/admin/dashboard"
                   className="px-4 py-2 rounded-lg transition-colors"
@@ -185,6 +216,7 @@ export default function Header() {
               )}
             </>
           )}
+        </div>
 
           {/* Authenticated user section */}
           {session ? (

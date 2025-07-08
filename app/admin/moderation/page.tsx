@@ -5,10 +5,12 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import ModerateButton from "./ModerateButton";
 
+import { canModerateContent } from "@/lib/permissions";
+
 export default async function ContentModerationPage() {
-  // Check if user is admin
+  // Check if user can moderate content
   const session = await getServerSession(authOptions);
-  if (!session?.user || !session.user.isAdmin) {
+  if (!session?.user || !canModerateContent(session.user.role || "")) {
     redirect("/");
   }
 
@@ -86,30 +88,50 @@ export default async function ContentModerationPage() {
             borderColor: "var(--card-border)",
           }}
         >
-          <h2 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>
+          <h2
+            className="text-xl font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
             Pending Posts ({pendingPosts.length})
           </h2>
         </div>
 
         {pendingPosts.length === 0 ? (
-          <div className="p-6 text-center" style={{ color: "var(--text-secondary)" }}>
+          <div
+            className="p-6 text-center"
+            style={{ color: "var(--text-secondary)" }}
+          >
             No posts waiting for moderation
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full">
-              <thead style={{ backgroundColor: "var(--table-header-background)" }}>
+              <thead
+                style={{ backgroundColor: "var(--table-header-background)" }}
+              >
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
                     Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
                     Author
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
                     Actions
                   </th>
                 </tr>
@@ -117,28 +139,40 @@ export default async function ContentModerationPage() {
               <tbody>
                 {pendingPosts.map((post) => (
                   <tr key={post.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
-                      <Link href={`/posts/${post.id}`} className="hover:underline">
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm"
+                      style={{ color: "var(--text-primary)" }}
+                    >
+                      <Link
+                        href={`/posts/${post.id}`}
+                        className="hover:underline"
+                      >
                         {post.title}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm"
+                      style={{ color: "var(--text-primary)" }}
+                    >
                       {post.author?.name || post.author?.email || "Anonymous"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm"
+                      style={{ color: "var(--text-primary)" }}
+                    >
                       {new Date(post.createdAt).toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <div className="flex gap-2">
-                        <ModerateButton 
-                          id={post.id.toString()} 
-                          type="post" 
-                          action="approve" 
+                        <ModerateButton
+                          id={post.id.toString()}
+                          type="post"
+                          action="approve"
                         />
-                        <ModerateButton 
-                          id={post.id.toString()} 
-                          type="post" 
-                          action="reject" 
+                        <ModerateButton
+                          id={post.id.toString()}
+                          type="post"
+                          action="reject"
                         />
                         <Link
                           href={`/posts/${post.id}`}
@@ -171,33 +205,56 @@ export default async function ContentModerationPage() {
             borderColor: "var(--card-border)",
           }}
         >
-          <h2 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>
+          <h2
+            className="text-xl font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
             Pending Comments ({pendingComments.length})
           </h2>
         </div>
 
         {pendingComments.length === 0 ? (
-          <div className="p-6 text-center" style={{ color: "var(--text-secondary)" }}>
+          <div
+            className="p-6 text-center"
+            style={{ color: "var(--text-secondary)" }}
+          >
             No comments waiting for moderation
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full">
-              <thead style={{ backgroundColor: "var(--table-header-background)" }}>
+              <thead
+                style={{ backgroundColor: "var(--table-header-background)" }}
+              >
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
                     Comment
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
                     Post
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
                     Author
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium uppercase"
+                    style={{ color: "var(--table-header-foreground)" }}
+                  >
                     Actions
                   </th>
                 </tr>
@@ -205,31 +262,46 @@ export default async function ContentModerationPage() {
               <tbody>
                 {pendingComments.map((comment) => (
                   <tr key={comment.id}>
-                    <td className="px-6 py-4 text-sm" style={{ color: "var(--text-primary)" }}>
+                    <td
+                      className="px-6 py-4 text-sm"
+                      style={{ color: "var(--text-primary)" }}
+                    >
                       <div className="max-w-xs truncate">{comment.content}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
-                      <Link href={`/posts/${comment.postId}`} className="hover:underline">
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm"
+                      style={{ color: "var(--text-primary)" }}
+                    >
+                      <Link
+                        href={`/posts/${comment.postId}`}
+                        className="hover:underline"
+                      >
                         {comment.post.title}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm"
+                      style={{ color: "var(--text-primary)" }}
+                    >
                       {comment.author?.name || comment.author?.email}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm"
+                      style={{ color: "var(--text-primary)" }}
+                    >
                       {new Date(comment.createdAt).toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <div className="flex gap-2">
-                        <ModerateButton 
-                          id={comment.id} 
-                          type="comment" 
-                          action="approve" 
+                        <ModerateButton
+                          id={comment.id}
+                          type="comment"
+                          action="approve"
                         />
-                        <ModerateButton 
-                          id={comment.id} 
-                          type="comment" 
-                          action="reject" 
+                        <ModerateButton
+                          id={comment.id}
+                          type="comment"
+                          action="reject"
                         />
                       </div>
                     </td>

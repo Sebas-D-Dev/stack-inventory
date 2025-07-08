@@ -3,9 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import prisma from "@/lib/prisma";
 
+import { canAccessAdminFeatures, canManageSystemSettings } from "@/lib/permissions";
+
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.isAdmin) {
+  if (!session?.user || !canAccessAdminFeatures(session.user.role || '')) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -23,7 +25,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.isAdmin) {
+  if (!session?.user || !canManageSystemSettings(session.user.role || '')) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

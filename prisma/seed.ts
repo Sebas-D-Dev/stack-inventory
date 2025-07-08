@@ -10,58 +10,71 @@ async function main() {
   const users = await Promise.all([
     prisma.user.upsert({
       where: { email: 'alice@example.com' },
-      update: {},
+      update: { role: 'MODERATOR' }, // Update existing user's role if needed
       create: {
         email: 'alice@example.com',
         name: 'Alice',
         password: await bcrypt.hash('password123', 10),
+        role: 'MODERATOR', // Assign Alice as a moderator
       },
     }),
     prisma.user.upsert({
       where: { email: 'bob@example.com' },
-      update: {},
+      update: { role: 'VENDOR' },
       create: {
         email: 'bob@example.com',
         name: 'Bob',
         password: await bcrypt.hash('password123', 10),
+        role: 'VENDOR', // Bob is a vendor
       },
     }),
     prisma.user.upsert({
       where: { email: 'charlie@example.com' },
-      update: {},
+      update: { role: 'USER' },
       create: {
         email: 'charlie@example.com',
         name: 'Charlie',
         password: await bcrypt.hash('password123', 10),
+        role: 'USER', // Charlie is a regular user
       },
     }),
     prisma.user.upsert({
       where: { email: 'diana@example.com' },
-      update: {},
+      update: { role: 'ADMIN' },
       create: {
         email: 'diana@example.com',
         name: 'Diana',
         password: await bcrypt.hash('password123', 10),
+        role: 'ADMIN', // Diana is an admin
       },
     }),
     prisma.user.upsert({
       where: { email: 'edward@example.com' },
-      update: {},
+      update: { role: 'SUPER_ADMIN' },
       create: {
         email: 'edward@example.com',
         name: 'Edward',
         password: await bcrypt.hash('password123', 10),
+        role: 'SUPER_ADMIN', // Edward is a super admin
       },
     }),
   ]);
 
   const [alice, bob, charlie, diana, edward] = users;
 
-  // Create admin entry in the Admin table - this is how Edward becomes an admin
+  // Admin table entry is still needed for backward compatibility
+  // This maintains support for code that checks admin status through this table
   await prisma.admin.upsert({
     where: { userId: edward.id },
     update: {},
     create: { userId: edward.id },
+  });
+  
+  // Also add Diana as an admin in the Admin table
+  await prisma.admin.upsert({
+    where: { userId: diana.id },
+    update: {},
+    create: { userId: diana.id },
   });
 
   // Create categories using upsert
