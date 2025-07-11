@@ -16,10 +16,10 @@ interface Product {
 export default function EditProductPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }> | { id: string };
 }) {
   const router = useRouter();
-  const { id } = params;
+  const id = typeof params === "object" && "id" in params ? params.id : "";
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
