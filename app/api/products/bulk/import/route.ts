@@ -55,9 +55,9 @@ export async function POST(request: Request) {
     // Process and validate each product
     const products = [];
     const validationErrors = [];
-
+    
     for (let i = 0; i < data.length; i++) {
-      const row = data[i] as any;
+      const row = data[i] as ProductImportRow;
       const rowNum = i + 2; // +2 for header row and 0-indexing
       
       // Validate required fields
@@ -79,11 +79,6 @@ export async function POST(request: Request) {
         validationErrors.push(`Row ${rowNum}: Invalid quantity`);
         continue;
       }
-      
-      // Check if SKU already exists
-      const existingProduct = await prisma.product.findUnique({
-        where: { sku: row.sku }
-      });
       
       products.push({
         name: row.name,
