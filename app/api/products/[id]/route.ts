@@ -5,11 +5,12 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!product) {
@@ -28,7 +29,7 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.isAdmin) {
@@ -36,11 +37,12 @@ export async function PUT(
   }
 
   try {
+    const { id } = await params;
     const body = await request.json();
     const { name, description, price, quantity, overrideConstraints } = body;
 
     const updatedProduct = await prisma.product.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         description,
