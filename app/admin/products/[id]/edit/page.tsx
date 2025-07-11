@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface Product {
   id: string;
@@ -177,6 +178,14 @@ export default function EditProductPage({
           Update Product
         </button>
       </form>
+      <div className="mt-4">
+        <Link
+          href={`/products?category=${product.id}`}
+          className="text-blue-500 hover:underline"
+        >
+          View All Products
+        </Link>
+      </div>
     </div>
   );
 }

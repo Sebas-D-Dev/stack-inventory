@@ -51,20 +51,30 @@ function CategoriesList() {
         </div>
       ) : (
         <>
-          <h1 className="text-3xl font-bold text-center mb-8">Product Categories</h1>
-          
+          <h1 className="text-3xl font-bold text-center mb-8">
+            Product Categories
+          </h1>
+
           {categories.length === 0 ? (
             <p className="text-center">No categories available.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
               {categories.map((category) => (
-                <div key={category.id} className="border p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                  <h2 className="text-xl font-semibold mb-2">{category.name}</h2>
+                <div
+                  key={category.id}
+                  className="border p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                >
+                  <h2 className="text-xl font-semibold mb-2">
+                    {category.name}
+                  </h2>
                   <p className="text-sm">
                     {category._count?.products || 0} products
                   </p>
                   <div className="mt-4">
-                    <Link href={`/categories/${category.id}`} className="text-blue-500 hover:underline">
+                    <Link
+                      href={`/products?category=${category.id}`}
+                      className="text-blue-500 hover:underline"
+                    >
                       View Products
                     </Link>
                   </div>

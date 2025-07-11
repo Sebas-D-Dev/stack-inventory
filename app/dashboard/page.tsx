@@ -82,7 +82,7 @@ export default async function Dashboard() {
               href="/inventory"
               className="form-button py-2 px-4 flex items-center"
             >
-              <span>Adjust Stock</span>
+              <span>Edit Inventory</span>
             </Link>
           </div>
         </div>

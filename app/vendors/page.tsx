@@ -3,7 +3,6 @@
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 
-
 interface Vendor {
   id: string;
   name: string;
@@ -50,24 +49,34 @@ function VendorsList() {
       ) : (
         <>
           <h1 className="text-3xl font-bold text-center mb-8">Vendors</h1>
-          
+
           {vendors.length === 0 ? (
             <p className="text-center">No vendors available.</p>
           ) : (
-            <div className="space-y-6 w-full max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
               {vendors.map((vendor) => (
-                <div key={vendor.id} className="border p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div
+                  key={vendor.id}
+                  className="border p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                >
                   <h2 className="text-xl font-semibold mb-2">{vendor.name}</h2>
                   {vendor.website && (
                     <p className="text-sm mb-2">
-                      Website: <a href={vendor.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{vendor.website}</a>
+                      <a
+                        href={vendor.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                      >
+                        {vendor.website}
+                      </a>
                     </p>
                   )}
-                  <p className="text-sm">
-                    {vendor._count?.products || 0} products
-                  </p>
                   <div className="mt-4">
-                    <Link href={`/vendors/${vendor.id}`} className="text-blue-500 hover:underline">
+                    <Link
+                      href={`/products?vendor=${vendor.id}`}
+                      className="text-blue-500 hover:underline"
+                    >
                       View Products
                     </Link>
                   </div>

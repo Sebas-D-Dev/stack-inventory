@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Product } from '@prisma/client';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Product } from "@prisma/client";
 
 export default function AdjustInventory() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState("");
   const [quantity, setQuantity] = useState(0);
-  const [reason, setReason] = useState('');
-  const [type, setType] = useState('ADJUSTMENT');
+  const [reason, setReason] = useState("");
+  const [type, setType] = useState("ADJUSTMENT");
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     async function fetchProducts() {
-      const response = await fetch('/api/products');
+      const response = await fetch("/api/products");
       const data = await response.json();
-      setProducts(data);
+      setProducts(data.products); // ✅ Correctly access the products array
       setIsLoading(false);
     }
 
@@ -26,12 +26,12 @@ export default function AdjustInventory() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    
+
     try {
-      const response = await fetch('/api/inventory/movement', {
-        method: 'POST',
+      const response = await fetch("/api/inventory/movement", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           productId: selectedProduct,
@@ -42,24 +42,30 @@ export default function AdjustInventory() {
       });
 
       if (response.ok) {
-        router.push('/products');
+        router.push("/products");
         router.refresh();
       } else {
-        console.error('Failed to adjust inventory');
+        console.error("Failed to adjust inventory");
       }
     } catch (error) {
-      console.error('Error adjusting inventory:', error);
+      console.error("Error adjusting inventory:", error);
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 rounded-lg my-8" style={{
-      backgroundColor: "var(--card-background)",
-      borderColor: "var(--card-border)",
-      borderWidth: "1px",
-      boxShadow: "var(--shadow-md)",
-    }}>
-      <h1 className="text-2xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+    <div
+      className="max-w-2xl mx-auto p-6 rounded-lg my-8"
+      style={{
+        backgroundColor: "var(--card-background)",
+        borderColor: "var(--card-border)",
+        borderWidth: "1px",
+        boxShadow: "var(--shadow-md)",
+      }}
+    >
+      <h1
+        className="text-2xl font-bold mb-6"
+        style={{ color: "var(--text-primary)" }}
+      >
         Adjust Inventory
       </h1>
 
@@ -71,7 +77,10 @@ export default function AdjustInventory() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="productId" className="form-label form-label-required">
+            <label
+              htmlFor="productId"
+              className="form-label form-label-required"
+            >
               Product
             </label>
             <select
@@ -110,7 +119,10 @@ export default function AdjustInventory() {
           </div>
 
           <div>
-            <label htmlFor="quantity" className="form-label form-label-required">
+            <label
+              htmlFor="quantity"
+              className="form-label form-label-required"
+            >
               Quantity Change
             </label>
             <input
@@ -122,7 +134,10 @@ export default function AdjustInventory() {
               className="form-input"
               placeholder="Use negative values for removal"
             />
-            <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
+            <p
+              className="text-sm mt-1"
+              style={{ color: "var(--text-secondary)" }}
+            >
               Use positive values to add stock, negative to remove
             </p>
           </div>

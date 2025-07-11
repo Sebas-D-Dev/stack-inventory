@@ -25,7 +25,7 @@ export default function Header() {
     "/register",
     "/forgot-password",
     "/reset-password",
-    "/setup"
+    "/setup",
   ];
   const isAuthPage = authPaths.includes(pathname);
 
@@ -97,7 +97,7 @@ export default function Header() {
           <div className="relative">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center justify-center p-2 rounded-lg transition-colors"
+              className="flex items-right justify-center p-2 rounded-lg transition-colors"
               style={{
                 backgroundColor: "var(--card-background)",
                 color: "var(--text-primary)",
@@ -106,7 +106,7 @@ export default function Header() {
               }}
               aria-label="Change theme"
             >
-              {theme === "light" && <SunIcon className="h-5 w-5" />}
+              {theme === "light" && <SunIcon className="h-5 w-5 " />}
               {theme === "dark" && <MoonIcon className="h-5 w-5" />}
               {theme === "system" && (
                 <ComputerDesktopIcon className="h-5 w-5" />
@@ -172,103 +172,70 @@ export default function Header() {
               >
                 Dashboard
               </Link>
-import { canAccessAdminFeatures } from "@/lib/permissions";
-
-export default function Header() {
-  const { data: session } = useSession();
-  const pathname = usePathname();
-  
-  const isAuthPage = pathname === "/login" || pathname === "/register" || pathname === "/forgot-password";
-
-  return (
-    <header
-      className="w-full py-4 px-8 border-b transition-colors"
-      style={{
-        backgroundColor: "var(--header-background)",
-        borderColor: "var(--header-border)",
-      }}
-    >
-      <nav className="flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          {(!isAuthPage || session) && (
-            <>
-              <Link
-                href="/dashboard"
-                className="px-4 py-2 rounded-lg transition-colors"
-                style={{
-                  backgroundColor: "var(--button-background)",
-                  color: "var(--button-foreground)",
-                }}
-              >
-                Dashboard
-              </Link>
-              {session?.user && canAccessAdminFeatures(session.user.role || '') && (
-                <Link
-                  href="/admin/dashboard"
-                  className="px-4 py-2 rounded-lg transition-colors"
-                  style={{
-                  backgroundColor: "var(--button-background)",
-                  color: "var(--button-foreground)",
-                }}
-                >
-                  Admin Dashboard
-                </Link>
-              )}
+              {session?.user &&
+                canAccessAdminFeatures(session.user.role || "") && (
+                  <Link
+                    href="/admin/dashboard"
+                    className="px-4 py-2 rounded-lg transition-colors"
+                    style={{
+                      backgroundColor: "var(--button-background)",
+                      color: "var(--button-foreground)",
+                    }}
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
             </>
           )}
         </div>
 
-          {/* Authenticated user section */}
-          {session ? (
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/profile"
-                className="px-4 py-2 rounded-lg transition-colors"
-                style={{
-                  backgroundColor: "var(--button-background)",
-                  color: "var(--button-foreground)",
-                }}
-              >
-                Profile
-              </Link>
-              <div
-                className="text-sm"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {session.user?.name && (
-                  <div style={{ color: "var(--text-primary)" }}>
-                    {session.user.name}
-                  </div>
-                )}
-                <div>{session.user?.email}</div>
-              </div>
-              <button
-                onClick={() => signOut()}
-                className="px-4 py-2 rounded-lg transition-colors"
-                style={{
-                  backgroundColor: "var(--error)",
-                  color: "white",
-                }}
-              >
-                Sign Out
-              </button>
+        {/* Authenticated user section */}
+        {session ? (
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/profile"
+              className="px-4 py-2 rounded-lg transition-colors"
+              style={{
+                backgroundColor: "var(--button-background)",
+                color: "var(--button-foreground)",
+              }}
+            >
+              Profile
+            </Link>
+            <div className="text-sm" style={{ color: "var(--text-secondary)" }}>
+              {session.user?.name && (
+                <div style={{ color: "var(--text-primary)" }}>
+                  {session.user.name}
+                </div>
+              )}
+              <div>{session.user?.email}</div>
             </div>
-          ) : (
-            // Only show login button when not on an auth page
-            !isAuthPage && (
-              <Link
-                href="/login"
-                className="px-4 py-2 rounded-lg transition-colors"
-                style={{
-                  backgroundColor: "var(--button-background)",
-                  color: "var(--button-foreground)",
-                }}
-              >
-                Sign In
-              </Link>
-            )
-          )}
-        </div>
+            <button
+              onClick={() => signOut()}
+              className="px-4 py-2 rounded-lg transition-colors"
+              style={{
+                backgroundColor: "var(--error)",
+                color: "white",
+              }}
+            >
+              Sign Out
+            </button>
+          </div>
+        ) : (
+          // Only show login button when not on an auth page
+          !isAuthPage && (
+            <Link
+              href="/login"
+              className="px-4 py-2 rounded-lg transition-colors"
+              style={{
+                backgroundColor: "var(--button-background)",
+                color: "var(--button-foreground)",
+              }}
+            >
+              Sign In
+            </Link>
+          )
+        )}
       </nav>
     </header>
   );

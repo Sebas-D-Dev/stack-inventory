@@ -55,8 +55,8 @@ export default async function AdminUserManagement() {
             href="/users/new"
             className="px-4 py-2 rounded-lg transition-colors"
             style={{
-              backgroundColor: "var(--button-accent)",
-              color: "var(--button-accent-foreground)",
+              backgroundColor: "var(--button-background)",
+              color: "var(--button-foreground)",
             }}
           >
             Add New User
