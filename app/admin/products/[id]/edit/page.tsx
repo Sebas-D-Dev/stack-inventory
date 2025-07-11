@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 
 interface Product {
@@ -13,13 +13,10 @@ interface Product {
   overrideConstraints: boolean;
 }
 
-export default function EditProductPage({
-  params,
-}: {
-  params: Promise<{ id: string }> | { id: string };
-}) {
+export default function EditProductPage() {
   const router = useRouter();
-  const id = typeof params === "object" && "id" in params ? params.id : "";
+  const params = useParams();
+  const id = params.id as string;
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
