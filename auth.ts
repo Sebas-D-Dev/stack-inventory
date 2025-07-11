@@ -36,17 +36,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid credentials");
         }
 
+        // At this point user is guaranteed to exist and be enabled
         // Determine permissions based solely on role
         const userRole = user.role;
         const isAdmin = userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
-
-        return {
-          id: user.id,
-          name: user.name ?? "",
-          email: user.email,
-          role: userRole,
-          isAdmin: isAdmin,
-        };
 
         return {
           id: user.id,

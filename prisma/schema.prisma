@@ -45,7 +45,6 @@ model User {
   role               Role                @default(USER)
   comments           Comment[]
   admin              Admin?              @relation("AdminUser")
-
 }
 
 model Post {
@@ -325,10 +324,19 @@ model Admin {
 }
 
 model SystemSetting {
-id        String   @id @default(cuid())
-key       String   @unique
-value     String   @db.Text
-category  String
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContentGuideline {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
