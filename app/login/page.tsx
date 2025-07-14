@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
+import { cn } from "@/lib/cn";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,7 +19,8 @@ export default function LoginPage() {
       const callbackUrl = new URLSearchParams(window.location.search).get(
         "callbackUrl"
       )
-        ? window.location.origin + new URLSearchParams(window.location.search).get("callbackUrl")
+        ? window.location.origin +
+          new URLSearchParams(window.location.search).get("callbackUrl")
         : "/";
       const response = await signIn("credentials", {
         ...Object.fromEntries(formData),
@@ -42,9 +44,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 themed-card">
+      <div
+        className={cn(
+          "max-w-md w-full space-y-8 p-6 rounded-lg",
+          "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md"
+        )}
+      >
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold themed-span-primary">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Sign in to your account
           </h2>
         </div>
@@ -101,10 +108,16 @@ export default function LoginPage() {
         </form>
         <div className="text-center space-y-2">
           <div>
-            <Link href="/forgot-password" className="text-text-link hover:text-text-link-hover m-4">
+            <Link
+              href="/forgot-password"
+              className="text-text-link hover:text-text-link-hover m-4"
+            >
               Forgot your password?
             </Link>
-            <Link href="/register" className="text-text-link hover:text-text-link-hover m-4">
+            <Link
+              href="/register"
+              className="text-text-link hover:text-text-link-hover m-4"
+            >
               No account? Register.
             </Link>
           </div>

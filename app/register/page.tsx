@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { cn } from "@/lib/cn";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -58,9 +59,14 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 themed-card">
+      <div
+        className={cn(
+          "max-w-md w-full space-y-8 p-6 rounded-lg",
+          "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md"
+        )}
+      >
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold themed-span-primary">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Create your account
           </h2>
         </div>

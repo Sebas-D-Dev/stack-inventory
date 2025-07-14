@@ -54,5 +54,5 @@ Stack Inventory is an AI-powered inventory management system designed to go beyo
 - **Frontend**: Next.js + Tailwind CSS
 - **Backend**: Prisma ORM + PostgreSQL (Vercel DB)
 - **Authentication**: NextAuth
-- **AI Integration**: Python microservices via API routes / external APIs (OpenAI, etc.)
+- **AI Integration**: Python microservices via API routes / external APIs (Google Gemini AI)
 - **Hosting**: Vercel

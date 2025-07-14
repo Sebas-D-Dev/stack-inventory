@@ -3,6 +3,7 @@
 import Form from "next/form";
 import { useState } from "react";
 import { createCategory } from "./actions";
+import { cn } from "@/lib/cn";
 
 export default function NewCategory() {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,8 +14,13 @@ export default function NewCategory() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 rounded-lg my-8 themed-card">
-      <h1 className="text-2xl font-bold mb-6 themed-span-primary">
+    <div
+      className={cn(
+        "max-w-2xl mx-auto p-6 rounded-lg my-8",
+        "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md"
+      )}
+    >
+      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
         Add New Category
       </h1>
 
@@ -33,8 +39,8 @@ export default function NewCategory() {
           />
         </div>
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="form-button w-full py-3 flex justify-center items-center"
           disabled={isLoading}
         >

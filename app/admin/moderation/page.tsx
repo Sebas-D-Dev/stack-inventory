@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import ModerateButton from "./ModerateButton";
+import { cn } from "@/lib/cn";
+import { textVariants } from "@/lib/ui-variants";
+import { buttonVariants } from "@/lib/button-variants";
 
 import { canModerateContent } from "@/lib/permissions";
 
@@ -42,31 +45,23 @@ export default async function ContentModerationPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold themed-span-primary">
+          <h1 className={cn(textVariants({ variant: "h1" }))}>
             Content Moderation
           </h1>
-          <p className="themed-span-secondary">
+          <p className={cn(textVariants({ variant: "muted" }))}>
             Review and moderate user-generated content
           </p>
         </div>
         <div className="flex gap-4">
           <Link
             href="/admin/dashboard"
-            className="px-4 py-2 rounded-lg transition-colors"
-            style={{
-              backgroundColor: "var(--button-background)",
-              color: "var(--button-foreground)",
-            }}
+            className={cn(buttonVariants({ variant: "secondary" }))}
           >
             Back to Admin Dashboard
           </Link>
           <Link
             href="/admin/moderation/guidelines"
-            className="px-4 py-2 rounded-lg transition-colors"
-            style={{
-              backgroundColor: "var(--button-accent)",
-              color: "var(--button-accent-foreground)",
-            }}
+            className={cn(buttonVariants({ variant: "default" }))}
           >
             Manage Guidelines
           </Link>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { updateProfile } from "./actions";
+import { cn } from "@/lib/cn";
 
 export default function ProfilePage() {
   const { data: session, update } = useSession();
@@ -79,8 +80,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 rounded-lg my-8 themed-card">
-      <h1 className="text-3xl font-bold mb-6 themed-span-primary">
+    <div
+      className={cn(
+        "max-w-2xl mx-auto p-6 rounded-lg my-8",
+        "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md"
+      )}
+    >
+      <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
         Your Profile
       </h1>
 
@@ -126,7 +132,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="border-t pt-6 mt-6">
-          <h2 className="text-xl font-semibold mb-4 themed-span-primary">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
             Change Password
           </h2>
           <p

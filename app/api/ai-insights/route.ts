@@ -1,12 +1,12 @@
-import { google } from '@ai-sdk/google';
-import { streamText } from 'ai';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/auth';
 import prisma from '@/lib/prisma';
 import { ProductData, CategoryData, InsightRequestParams } from './types';
+import { generateText } from '@/lib/google-ai';
 
 export async function POST(request: Request) {
+  // Check authentication
   const session = await getServerSession(authOptions);
   
   if (!session || !session.user) {
@@ -50,7 +50,6 @@ export async function POST(request: Request) {
           }
         });
         break;
-      // Add other entity types as needed
       default:
         return NextResponse.json({ 
           error: 'Unsupported entity type' 
@@ -115,19 +114,42 @@ Provide insights about:
 `;
     }
 
-    // Generate the AI response using the modern AI SDK
-    const result = await streamText({
-      model: google('gemini-pro'),
-      prompt,
-    });
+    try {
+      // Generate insight using Google AI
+      const insight = await generateText(prompt);
 
-    // Return the streaming response
-    return result.toDataStreamResponse();
-    
+      return NextResponse.json({ 
+        insight,
+        success: true 
+      });
+      
+    } catch (error) {
+      console.error('AI Error:', error);
+      
+      // Error handling
+      if (error instanceof Error) {
+        if (error.message.includes('key') || error.message.includes('auth')) {
+          return NextResponse.json({ 
+            error: 'Authentication error with AI provider', 
+            details: error.message
+          }, { status: 500 });
+        }
+        
+        if (error.message.includes('rate') || error.message.includes('limit')) {
+          return NextResponse.json({ 
+            error: 'Rate limit exceeded with AI provider',
+            details: error.message
+          }, { status: 429 });
+        }
+      }
+      
+      throw error;
+    }
   } catch (error) {
     console.error('Error generating AI insight:', error);
     return NextResponse.json({ 
-      error: 'Failed to generate insight' 
+      error: 'Failed to generate insight',
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }

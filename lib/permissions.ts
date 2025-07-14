@@ -68,3 +68,16 @@ export function canDeletePost(role: string, isOwner: boolean): boolean {
 export function canApproveContent(role: string): boolean {
   return hasMinimumRole(role, 'MODERATOR');
 }
+
+// AI Assistant permissions
+export function canUseInventoryAssistant(role: string): boolean {
+  return hasMinimumRole(role, 'USER'); // All authenticated users can use the assistant
+}
+
+export function canAccessFullInventoryData(role: string): boolean {
+  return hasMinimumRole(role, 'ADMIN');
+}
+
+export function canAccessVendorData(role: string): boolean {
+  return hasMinimumRole(role, 'VENDOR');
+}

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useTheme } from "next-themes";
 import {
   SunIcon,
   MoonIcon,
@@ -10,12 +11,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { usePathname } from "next/navigation";
 import { canAccessAdminFeatures } from "@/lib/permissions";
-
-type Theme = "light" | "dark" | "system";
+import { cn } from "@/lib/cn";
+import { buttonVariants } from "@/lib/button-variants";
 
 export default function Header() {
   const { data: session } = useSession();
-  const [theme, setTheme] = useState<Theme>("system");
+  const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
@@ -29,66 +30,27 @@ export default function Header() {
   ];
   const isAuthPage = authPaths.includes(pathname);
 
-  // Update theme when component mounts and when theme changes
-  useEffect(() => {
-    // Get stored theme or default to system
-    const storedTheme = localStorage.getItem("theme") as Theme | null;
-    if (storedTheme) {
-      setTheme(storedTheme);
-      applyTheme(storedTheme);
-    } else {
-      applyTheme("system");
-    }
-
-    // Add event listener for system preference changes
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = () => {
-      if (theme === "system") {
-        applyTheme("system");
-      }
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [theme]);
-
-  // Apply the selected theme
-  const applyTheme = (newTheme: Theme) => {
-    const root = document.documentElement;
-    const isDark =
-      newTheme === "dark" ||
-      (newTheme === "system" &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches);
-
-    if (isDark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-
-    localStorage.setItem("theme", newTheme);
-  };
-
   // Handle theme change
-  const changeTheme = (newTheme: Theme) => {
+  const changeTheme = (newTheme: string) => {
     setTheme(newTheme);
-    applyTheme(newTheme);
     setIsOpen(false);
   };
 
   return (
     <header
-      className="w-full py-4 px-8 border-b transition-colors"
-      style={{
-        backgroundColor: "var(--header-background)",
-        borderColor: "var(--header-border)",
-      }}
+      className={cn(
+        "w-full py-4 px-8 border-b transition-colors",
+        "bg-white dark:bg-gray-900",
+        "border-gray-200 dark:border-gray-800"
+      )}
     >
       <nav className="flex justify-between items-center">
         <Link
           href="/"
-          className="text-xl font-bold transition-colors"
-          style={{ color: "var(--text-primary)" }}
+          className={cn(
+            "text-xl font-bold transition-colors",
+            "text-gray-900 dark:text-white"
+          )}
         >
           Stack Inventory
         </Link>
@@ -97,16 +59,14 @@ export default function Header() {
           <div className="relative">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-right justify-center p-2 rounded-lg transition-colors"
-              style={{
-                backgroundColor: "var(--card-background)",
-                color: "var(--text-primary)",
-                borderColor: "var(--card-border)",
-                border: "1px solid",
-              }}
+              className={cn(
+                "flex items-center justify-center p-2 rounded-lg transition-colors",
+                "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white",
+                "border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
+              )}
               aria-label="Change theme"
             >
-              {theme === "light" && <SunIcon className="h-5 w-5 " />}
+              {theme === "light" && <SunIcon className="h-5 w-5" />}
               {theme === "dark" && <MoonIcon className="h-5 w-5" />}
               {theme === "system" && (
                 <ComputerDesktopIcon className="h-5 w-5" />
@@ -115,32 +75,37 @@ export default function Header() {
 
             {isOpen && (
               <div
-                className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-10 border transition-colors"
-                style={{
-                  backgroundColor: "var(--dropdown-background)",
-                  borderColor: "var(--dropdown-border)",
-                }}
+                className={cn(
+                  "absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-10 border",
+                  "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                )}
               >
                 <button
                   onClick={() => changeTheme("light")}
-                  className="flex items-center px-4 py-2 text-sm w-full text-left transition-colors hover:bg-opacity-10"
-                  style={{ color: "var(--text-primary)" }}
+                  className={cn(
+                    "flex items-center px-4 py-2 text-sm w-full text-left transition-colors",
+                    "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                  )}
                 >
                   <SunIcon className="h-5 w-5 mr-2" />
                   Light
                 </button>
                 <button
                   onClick={() => changeTheme("dark")}
-                  className="flex items-center px-4 py-2 text-sm w-full text-left transition-colors hover:bg-opacity-10"
-                  style={{ color: "var(--text-primary)" }}
+                  className={cn(
+                    "flex items-center px-4 py-2 text-sm w-full text-left transition-colors",
+                    "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                  )}
                 >
                   <MoonIcon className="h-5 w-5 mr-2" />
                   Dark
                 </button>
                 <button
                   onClick={() => changeTheme("system")}
-                  className="flex items-center px-4 py-2 text-sm w-full text-left transition-colors hover:bg-opacity-10"
-                  style={{ color: "var(--text-primary)" }}
+                  className={cn(
+                    "flex items-center px-4 py-2 text-sm w-full text-left transition-colors",
+                    "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                  )}
                 >
                   <ComputerDesktopIcon className="h-5 w-5 mr-2" />
                   System
@@ -154,33 +119,29 @@ export default function Header() {
             <>
               <Link
                 href="/posts"
-                className="px-4 py-2 rounded-lg transition-colors"
-                style={{
-                  backgroundColor: "var(--button-background)",
-                  color: "var(--button-foreground)",
-                }}
+                className={cn(buttonVariants({ variant: "default" }))}
               >
                 Posts
               </Link>
               <Link
                 href="/dashboard"
-                className="px-4 py-2 rounded-lg transition-colors"
-                style={{
-                  backgroundColor: "var(--button-background)",
-                  color: "var(--button-foreground)",
-                }}
+                className={cn(buttonVariants({ variant: "default" }))}
               >
                 Dashboard
               </Link>
+              {session?.user && (
+                <Link
+                  href="/inventory-assistant"
+                  className={cn(buttonVariants({ variant: "default" }))}
+                >
+                  AI Assistant
+                </Link>
+              )}
               {session?.user &&
                 canAccessAdminFeatures(session.user.role || "") && (
                   <Link
                     href="/admin/dashboard"
-                    className="px-4 py-2 rounded-lg transition-colors"
-                    style={{
-                      backgroundColor: "var(--button-background)",
-                      color: "var(--button-foreground)",
-                    }}
+                    className={cn(buttonVariants({ variant: "default" }))}
                   >
                     Admin Dashboard
                   </Link>
@@ -194,17 +155,13 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <Link
               href="/profile"
-              className="px-4 py-2 rounded-lg transition-colors"
-              style={{
-                backgroundColor: "var(--button-background)",
-                color: "var(--button-foreground)",
-              }}
+              className={cn(buttonVariants({ variant: "default" }))}
             >
               Profile
             </Link>
-            <div className="text-sm" style={{ color: "var(--text-secondary)" }}>
+            <div className={cn("text-sm", "text-gray-600 dark:text-gray-400")}>
               {session.user?.name && (
-                <div style={{ color: "var(--text-primary)" }}>
+                <div className={cn("text-gray-900 dark:text-white")}>
                   {session.user.name}
                 </div>
               )}
@@ -212,11 +169,7 @@ export default function Header() {
             </div>
             <button
               onClick={() => signOut()}
-              className="px-4 py-2 rounded-lg transition-colors"
-              style={{
-                backgroundColor: "var(--error)",
-                color: "white",
-              }}
+              className={cn(buttonVariants({ variant: "destructive" }))}
             >
               Sign Out
             </button>
@@ -226,11 +179,7 @@ export default function Header() {
           !isAuthPage && (
             <Link
               href="/login"
-              className="px-4 py-2 rounded-lg transition-colors"
-              style={{
-                backgroundColor: "var(--button-background)",
-                color: "var(--button-foreground)",
-              }}
+              className={cn(buttonVariants({ variant: "default" }))}
             >
               Sign In
             </Link>

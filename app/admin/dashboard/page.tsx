@@ -3,6 +3,8 @@ import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import { cn } from "@/lib/cn";
+import { cardVariants, textVariants } from "@/lib/ui-variants";
 
 import { canAccessAdminFeatures } from "@/lib/permissions";
 
@@ -33,10 +35,8 @@ export default async function AdminDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold themed-span-primary">
-          Admin Dashboard
-        </h1>
-        <p className="themed-span-secondary">
+        <h1 className={cn(textVariants({ variant: "h1" }))}>Admin Dashboard</h1>
+        <p className={cn(textVariants({ variant: "muted" }))}>
           Manage your system from a single place
         </p>
       </div>
@@ -45,17 +45,15 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Link
           href="/admin/users"
-          className="p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          style={{
-            backgroundColor: "var(--card-background)",
-            borderColor: "var(--card-border)",
-            borderWidth: "1px",
-          }}
+          className={cn(
+            cardVariants({ variant: "default" }),
+            "hover:shadow-md transition-shadow block"
+          )}
         >
-          <h3 className="text-xl font-medium mb-2 themed-span-primary">
+          <h3 className={cn(textVariants({ variant: "h3" }), "mb-2")}>
             User Management
           </h3>
-          <p style={{ color: "var(--text-secondary)" }}>
+          <p className={cn(textVariants({ variant: "muted" }))}>
             Manage users, roles, and permissions
           </p>
           <p className="mt-4 text-3xl font-bold text-blue-600">{totalUsers}</p>
@@ -63,34 +61,30 @@ export default async function AdminDashboard() {
 
         <Link
           href="/admin/posts/history"
-          className="p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          style={{
-            backgroundColor: "var(--card-background)",
-            borderColor: "var(--card-border)",
-            borderWidth: "1px",
-          }}
+          className={cn(
+            cardVariants({ variant: "default" }),
+            "hover:shadow-md transition-shadow block"
+          )}
         >
-          <h3 className="text-xl font-medium mb-2 themed-span-primary">
+          <h3 className={cn(textVariants({ variant: "h3" }), "mb-2")}>
             Post History
           </h3>
-          <p style={{ color: "var(--text-secondary)" }}>
+          <p className={cn(textVariants({ variant: "muted" }))}>
             View all content change history
           </p>
         </Link>
 
         <Link
           href="/admin/products"
-          className="p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          style={{
-            backgroundColor: "var(--card-background)",
-            borderColor: "var(--card-border)",
-            borderWidth: "1px",
-          }}
+          className={cn(
+            cardVariants({ variant: "default" }),
+            "hover:shadow-md transition-shadow block"
+          )}
         >
-          <h3 className="text-xl font-medium mb-2 themed-span-primary">
+          <h3 className={cn(textVariants({ variant: "h3" }), "mb-2")}>
             Inventory Management
           </h3>
-          <p style={{ color: "var(--text-secondary)" }}>
+          <p className={cn(textVariants({ variant: "muted" }))}>
             Bulk edit products and approvals
           </p>
           <p className="mt-4 text-3xl font-bold text-green-600">
@@ -166,6 +160,40 @@ export default async function AdminDashboard() {
           </h3>
           <p style={{ color: "var(--text-secondary)" }}>
             Review and approve user-generated content
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/price-forecasting"
+          className="p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+          style={{
+            backgroundColor: "var(--card-background)",
+            borderColor: "var(--card-border)",
+            borderWidth: "1px",
+          }}
+        >
+          <h3 className="text-xl font-medium mb-2 themed-span-primary">
+            Price Forecasting
+          </h3>
+          <p style={{ color: "var(--text-secondary)" }}>
+            Analyze and forecast product pricing
+          </p>
+        </Link>
+
+        <Link
+          href="/inventory-assistant"
+          className="p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+          style={{
+            backgroundColor: "var(--card-background)",
+            borderColor: "var(--card-border)",
+            borderWidth: "1px",
+          }}
+        >
+          <h3 className="text-xl font-medium mb-2 themed-span-primary">
+            AI Inventory Assistant
+          </h3>
+          <p style={{ color: "var(--text-secondary)" }}>
+            Chat with AI about inventory management (Available to all users)
           </p>
         </Link>
       </div>
