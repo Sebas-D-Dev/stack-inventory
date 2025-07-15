@@ -3,8 +3,6 @@ import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import UserActions from "./UserActions";
-
 import { canManageUsers } from "@/lib/permissions";
 
 export default async function AdminUserManagement() {
@@ -33,6 +31,38 @@ export default async function AdminUserManagement() {
       },
     },
   });
+
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "SUPER_ADMIN":
+        return "Super Admin";
+      case "ADMIN":
+        return "Admin";
+      case "MODERATOR":
+        return "Moderator";
+      case "VENDOR":
+        return "Vendor";
+      case "USER":
+        return "User";
+      default:
+        return role;
+    }
+  };
+
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case "SUPER_ADMIN":
+        return "bg-purple-100 text-purple-800";
+      case "ADMIN":
+        return "bg-blue-100 text-blue-800";
+      case "MODERATOR":
+        return "bg-green-100 text-green-800";
+      case "VENDOR":
+        return "bg-yellow-100 text-yellow-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -75,13 +105,7 @@ export default async function AdminUserManagement() {
                 className="px-6 py-3 text-left text-xs font-medium uppercase"
                 style={{ color: "var(--table-header-foreground)" }}
               >
-                Name
-              </th>
-              <th
-                className="px-6 py-3 text-left text-xs font-medium uppercase"
-                style={{ color: "var(--table-header-foreground)" }}
-              >
-                Email
+                User
               </th>
               <th
                 className="px-6 py-3 text-left text-xs font-medium uppercase"
@@ -105,7 +129,7 @@ export default async function AdminUserManagement() {
                 className="px-6 py-3 text-left text-xs font-medium uppercase"
                 style={{ color: "var(--table-header-foreground)" }}
               >
-                Created
+                Joined
               </th>
               <th
                 className="px-6 py-3 text-left text-xs font-medium uppercase"
@@ -117,37 +141,36 @@ export default async function AdminUserManagement() {
           </thead>
           <tbody>
             {users.map((user) => {
-              // Determine admin status based on role instead of Admin table
-              const isAdmin =
-                user.role === "ADMIN" || user.role === "SUPER_ADMIN";
               const isDisabled = user.isDisabled || false;
 
               return (
                 <tr key={user.id} className={isDisabled ? "opacity-60" : ""}>
                   <td
-                    className="px-6 py-4 whitespace-nowrap text-sm"
+                    className="px-6 py-4 whitespace-nowrap"
                     style={{ color: "var(--text-primary)" }}
                   >
-                    {user.name || "—"}
-                  </td>
-                  <td
-                    className="px-6 py-4 whitespace-nowrap text-sm"
-                    style={{ color: "var(--text-primary)" }}
-                  >
-                    {user.email}
+                    <div>
+                      <div className="text-sm font-medium">
+                        {user.name || "—"}
+                      </div>
+                      <div
+                        className="text-sm"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
+                        {user.email}
+                      </div>
+                    </div>
                   </td>
                   <td
                     className="px-6 py-4 whitespace-nowrap text-sm"
                     style={{ color: "var(--text-primary)" }}
                   >
                     <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        isAdmin
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
+                      className={`px-2 py-1 text-xs rounded-full ${getRoleColor(
+                        user.role
+                      )}`}
                     >
-                      {isAdmin ? "ADMIN" : "USER"}
+                      {getRoleLabel(user.role)}
                     </span>
                   </td>
                   <td
@@ -161,7 +184,7 @@ export default async function AdminUserManagement() {
                           : "bg-green-100 text-green-800"
                       }`}
                     >
-                      {isDisabled ? "DISABLED" : "ACTIVE"}
+                      {isDisabled ? "Disabled" : "Active"}
                     </span>
                   </td>
                   <td
@@ -174,7 +197,7 @@ export default async function AdminUserManagement() {
                         className="text-xs"
                         style={{ color: "var(--text-secondary)" }}
                       >
-                        {user._count.posts} posts, {user._count.products}{" "}
+                        {user._count.posts} posts • {user._count.products}{" "}
                         products
                       </span>
                     </div>
@@ -186,12 +209,20 @@ export default async function AdminUserManagement() {
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <UserActions
-                      userId={user.id}
-                      isAdmin={isAdmin}
-                      isDisabled={isDisabled}
-                      currentUserId={session.user.id}
-                    />
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/admin/users/${user.id}`}
+                        className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
+                      >
+                        View Info
+                      </Link>
+                      <Link
+                        href={`/admin/users/${user.id}/activity`}
+                        className="px-2 py-1 rounded text-xs bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors"
+                      >
+                        Activity
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               );

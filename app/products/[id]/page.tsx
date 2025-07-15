@@ -153,6 +153,17 @@ export default async function ProductDetail({
           Back to Products
         </Link>
 
+        <Link
+          href={`/products/${id}/ai-insights`}
+          className="px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+          style={{
+            backgroundColor: "var(--button-background)",
+            color: "var(--button-foreground)",
+          }}
+        >
+          AI Insights
+        </Link>
+
         <EditButton editPath={`/products/${id}/edit`} itemName="product" />
 
         <DeleteButton deleteAction={deleteProduct} itemName="product" />

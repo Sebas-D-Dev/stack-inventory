@@ -3,11 +3,16 @@ import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import { canManageUsers } from "@/lib/permissions";
 
-export default async function UserActivityPage({ params }: { params: Promise<{ id: string }> }) {
-  // Check if user is admin
+export default async function UserActivityPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  // Check if user can manage users
   const session = await getServerSession(authOptions);
-  if (!session?.user || !session.user.isAdmin) {
+  if (!session?.user || !canManageUsers(session.user.role || "")) {
     redirect("/");
   }
 
@@ -50,23 +55,41 @@ export default async function UserActivityPage({ params }: { params: Promise<{ i
         </Link>
       </div>
 
-      <div className="overflow-x-auto rounded-lg shadow-sm" style={{ backgroundColor: "var(--card-background)" }}>
+      <div
+        className="overflow-x-auto rounded-lg shadow-sm"
+        style={{ backgroundColor: "var(--card-background)" }}
+      >
         <table className="min-w-full">
           <thead style={{ backgroundColor: "var(--table-header-background)" }}>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium uppercase"
+                style={{ color: "var(--table-header-foreground)" }}
+              >
                 Date & Time
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium uppercase"
+                style={{ color: "var(--table-header-foreground)" }}
+              >
                 Action
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium uppercase"
+                style={{ color: "var(--table-header-foreground)" }}
+              >
                 Entity Type
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium uppercase"
+                style={{ color: "var(--table-header-foreground)" }}
+              >
                 Entity ID
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: "var(--table-header-foreground)" }}>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium uppercase"
+                style={{ color: "var(--table-header-foreground)" }}
+              >
                 Details
               </th>
             </tr>
@@ -75,26 +98,49 @@ export default async function UserActivityPage({ params }: { params: Promise<{ i
             {activityLogs.length > 0 ? (
               activityLogs.map((log) => (
                 <tr key={log.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {new Date(log.createdAt).toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {log.action}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {log.entityType}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--text-primary)" }}>
-                    <span className="font-mono">{log.entityId.substring(0, 8)}...</span>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    <span className="font-mono">
+                      {log.entityId.substring(0, 8)}...
+                    </span>
                   </td>
-                  <td className="px-6 py-4 text-sm max-w-xs truncate" style={{ color: "var(--text-primary)" }}>
-                    {log.details ? JSON.parse(log.details).action || log.details : "-"}
+                  <td
+                    className="px-6 py-4 text-sm max-w-xs truncate"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    {log.details
+                      ? JSON.parse(log.details).action || log.details
+                      : "-"}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="px-6 py-4 text-center text-sm" style={{ color: "var(--text-secondary)" }}>
+                <td
+                  colSpan={5}
+                  className="px-6 py-4 text-center text-sm"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   No activity logs found for this user.
                 </td>
               </tr>

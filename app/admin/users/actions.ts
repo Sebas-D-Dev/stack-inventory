@@ -7,48 +7,47 @@ import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { generatePassword } from "@/lib/utils";
 
-// Toggle admin status (grant or revoke admin privileges)
-export async function toggleAdminStatus(userId: string, makeAdmin: boolean) {
-  // Verify the current user is an admin
+// Update user role
+export async function updateUserRole(userId: string, newRole: string) {
+  // Verify the current user has permission
   const session = await getServerSession(authOptions);
-  if (!session?.user?.isAdmin) {
+  if (!session?.user || !["ADMIN", "SUPER_ADMIN"].includes(session.user.role || "")) {
     throw new Error("Unauthorized");
   }
 
-  // Don't allow an admin to remove their own admin status
-  if (userId === session.user.id && !makeAdmin) {
-    throw new Error("You cannot remove your own admin status");
+  // Don't allow users to change their own role if they're admin/super_admin
+  if (userId === session.user.id && ["ADMIN", "SUPER_ADMIN"].includes(session.user.role || "")) {
+    throw new Error("You cannot change your own admin role");
   }
 
-  if (makeAdmin) {
-    // Check if the user already has admin status
-    const existingAdmin = await prisma.admin.findUnique({
-      where: { userId },
-    });
-
-    if (!existingAdmin) {
-      // Make the user an admin
-      await prisma.admin.create({
-        data: { userId },
-      });
-    }
-  } else {
-    // Remove admin status
-    await prisma.admin.deleteMany({
-      where: { userId },
-    });
+  // Validate the new role
+  const validRoles = ["USER", "VENDOR", "MODERATOR", "ADMIN", "SUPER_ADMIN"];
+  if (!validRoles.includes(newRole)) {
+    throw new Error("Invalid role specified");
   }
+
+  // Only SUPER_ADMIN can assign SUPER_ADMIN role
+  if (newRole === "SUPER_ADMIN" && session.user.role !== "SUPER_ADMIN") {
+    throw new Error("Only Super Admins can assign Super Admin role");
+  }
+
+  // Update user role
+  await prisma.user.update({
+    where: { id: userId },
+    data: { role: newRole as "USER" | "VENDOR" | "MODERATOR" | "ADMIN" | "SUPER_ADMIN" },
+  });
 
   // Log the action
   await prisma.activityLog.create({
     data: {
       userId: session.user.id,
-      action: makeAdmin ? "GRANT_ADMIN" : "REVOKE_ADMIN",
+      action: "UPDATE_USER_ROLE",
       entityType: "USER",
       entityId: userId,
       details: JSON.stringify({ 
         targetUser: userId,
-        action: makeAdmin ? "granted admin" : "revoked admin" 
+        newRole,
+        oldRole: session.user.role
       }),
     },
   });
@@ -56,15 +55,15 @@ export async function toggleAdminStatus(userId: string, makeAdmin: boolean) {
   revalidatePath("/admin/users");
 }
 
-// Toggle user status (enable or disable account)
-export async function toggleUserStatus(userId: string, enable: boolean) {
-  // Verify the current user is an admin
+// Update user status (enable or disable account)
+export async function updateUserStatus(userId: string, enable: boolean) {
+  // Verify the current user has permission
   const session = await getServerSession(authOptions);
-  if (!session?.user?.isAdmin) {
+  if (!session?.user || !["ADMIN", "SUPER_ADMIN"].includes(session.user.role || "")) {
     throw new Error("Unauthorized");
   }
 
-  // Don't allow admins to disable their own account
+  // Don't allow users to disable their own account
   if (userId === session.user.id) {
     throw new Error("You cannot change your own account status");
   }
@@ -94,9 +93,9 @@ export async function toggleUserStatus(userId: string, enable: boolean) {
 
 // Reset user password
 export async function resetUserPassword(userId: string) {
-  // Verify the current user is an admin
+  // Verify the current user has permission
   const session = await getServerSession(authOptions);
-  if (!session?.user?.isAdmin) {
+  if (!session?.user || !["ADMIN", "SUPER_ADMIN"].includes(session.user.role || "")) {
     throw new Error("Unauthorized");
   }
 
@@ -130,4 +129,14 @@ export async function resetUserPassword(userId: string) {
   
   // Return the new password to be displayed to the admin
   return newPassword;
+}
+
+// Legacy functions for backward compatibility
+export async function toggleAdminStatus(userId: string, makeAdmin: boolean) {
+  const newRole = makeAdmin ? "ADMIN" : "USER";
+  return updateUserRole(userId, newRole);
+}
+
+export async function toggleUserStatus(userId: string, enable: boolean) {
+  return updateUserStatus(userId, enable);
 }
