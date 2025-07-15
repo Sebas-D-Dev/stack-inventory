@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/auth';
 import { generateText } from '@/lib/google-ai';
-import prisma from '@/lib/prisma';
+import { buildComprehensiveAIContext } from '@/lib/ai-context-builder';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -23,59 +23,47 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
-    // Get some basic inventory data for context
-    const [totalProducts, lowStockProducts, categories] = await Promise.all([
-      prisma.product.count(),
-      prisma.product.count({
-        where: {
-          quantity: {
-            lte: prisma.product.fields.minimumOrderQuantity
-          }
-        }
-      }),
-      prisma.category.findMany({
-        include: {
-          _count: {
-            select: { products: true }
-          }
-        }
-      })
-    ]);
-
-    // Build context for the AI
-    const inventoryContext = `
-Current Inventory Status:
-- Total Products: ${totalProducts}
-- Low Stock Items: ${lowStockProducts}
-- Categories: ${categories.map(c => `${c.name} (${c._count.products} products)`).join(', ')}
-
-Recent conversation history:
-${history.slice(-5).map(h => `${h.role}: ${h.content}`).join('\n')}
-`;
+    // Build comprehensive context for the AI
+    const userRole = session.user.role || 'USER';
+    const contextualPrompt = await buildComprehensiveAIContext(userRole, message);
 
     const prompt = `
-You are an intelligent inventory management assistant. You have access to the following inventory information:
+${contextualPrompt}
 
-${inventoryContext}
+CONVERSATION HISTORY:
+${history.slice(-5).map(h => `${h.role}: ${h.content}`).join('\n')}
 
-User question: ${message}
+USER QUESTION: ${message}
 
-Please provide a helpful, specific response about inventory management. If the user asks about specific products, categories, or inventory operations, provide relevant guidance. Keep responses concise but informative.
+INSTRUCTIONS:
+- Provide specific, actionable responses based on the current inventory context
+- Use role-appropriate information and suggestions based on user's role (${userRole})
+- Reference specific products, categories, or vendors when relevant
+- Consider external factors (season, market trends) in recommendations
+- If asking about low stock, prioritize the most critical items first
+- For reorder suggestions, consider vendor relationships and order history
+- When discussing categories, include performance metrics and insights
+- If data is missing for a specific request, suggest specific actions the user can take
+- Keep responses conversational but professional and informative
+- Always prioritize accuracy and data-driven insights over speculation
+- Suggest specific next steps or actions when appropriate
 
-If you need specific product details that aren't provided in the context, suggest how the user can find that information in the system.
-`;
+RESPONSE:`;
 
     const response = await generateText(prompt);
-
+    
     return NextResponse.json({ 
-      response,
-      success: true 
+      response, 
+      success: true,
+      timestamp: new Date().toISOString(),
+      userRole: userRole
     });
-
+    
   } catch (error) {
-    console.error('Inventory Assistant Error:', error);
-    return NextResponse.json({ 
-      error: 'Failed to process your request' 
-    }, { status: 500 });
+    console.error('Error in inventory assistant:', error);
+    return NextResponse.json(
+      { error: 'Failed to process request', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
   }
 }
