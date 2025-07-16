@@ -14,6 +14,7 @@ import Image from "next/image";
 import { canAccessAdminFeatures } from "@/lib/permissions";
 import { cn } from "@/lib/cn";
 import { buttonVariants } from "@/lib/button-variants";
+import logoImage from "./logo.png";
 
 export default function Header() {
   const { data: session } = useSession();
@@ -48,7 +49,7 @@ export default function Header() {
       <nav className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <Image
-            src="/logo.png"
+            src={logoImage}
             alt="Site Logo"
             width={32}
             height={32}
