@@ -1,13 +1,11 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -15,17 +13,17 @@ export default function LoginPage() {
     try {
       event.preventDefault();
       setIsLoading(true);
+      setError(null);
+
       const formData = new FormData(event.currentTarget);
-      const callbackUrl = new URLSearchParams(window.location.search).get(
-        "callbackUrl"
-      )
-        ? window.location.origin +
-          new URLSearchParams(window.location.search).get("callbackUrl")
-        : "/";
+      const urlParams = new URLSearchParams(window.location.search);
+      const callbackUrl = urlParams.get("callbackUrl") || "/";
+
       const response = await signIn("credentials", {
-        ...Object.fromEntries(formData),
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
         redirect: false,
-        callbackUrl,
+        callbackUrl: callbackUrl,
       });
 
       if (response?.error) {
@@ -34,9 +32,22 @@ export default function LoginPage() {
         return;
       }
 
-      router.push(response?.url || callbackUrl);
-      router.refresh();
-    } catch {
+      if (response?.ok) {
+        // Give a small delay to ensure session is properly set
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Use window.location for more reliable redirect in production
+        if (response.url) {
+          window.location.href = response.url;
+        } else {
+          window.location.href = callbackUrl;
+        }
+      } else {
+        setError("An error occurred during login");
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
       setError("An error occurred during login");
       setIsLoading(false);
     }

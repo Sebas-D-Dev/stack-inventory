@@ -54,6 +54,11 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -70,6 +75,30 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as string;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Handle production URL configuration
+      const productionUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || baseUrl;
+      
+      // Allows relative callback URLs
+      if (url.startsWith("/")) {
+        return `${productionUrl}${url}`;
+      }
+      
+      // Allows callback URLs on the same origin
+      try {
+        const urlObj = new URL(url);
+        const baseUrlObj = new URL(productionUrl);
+        
+        if (urlObj.origin === baseUrlObj.origin) {
+          return url;
+        }
+      } catch (e) {
+        // If URL parsing fails, return base URL
+        console.error("URL parsing error in redirect callback:", e);
+      }
+      
+      return productionUrl;
     },
   },
 };
