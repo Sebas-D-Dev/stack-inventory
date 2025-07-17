@@ -161,10 +161,6 @@ export default async function AdminOrderManagement({
     }
   };
 
-  const getTotalValue = () => {
-    return orders.reduce((sum, order) => sum + order.totalAmount, 0);
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -181,17 +177,6 @@ export default async function AdminOrderManagement({
           >
             Manage and track all purchase orders across the system
           </p>
-        </div>
-        <div className="text-right">
-          <div
-            className="text-2xl font-bold"
-            style={{ color: "var(--text-primary)" }}
-          >
-            ${getTotalValue().toLocaleString()}
-          </div>
-          <div className="text-sm" style={{ color: "var(--text-secondary)" }}>
-            Total Order Value
-          </div>
         </div>
       </div>
 

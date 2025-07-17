@@ -2,22 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Base font size configuration */
+html {
+  font-size: 16px; /* Base font size for rem calculations */
+}
+
+/* Responsive font size adjustments */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px; /* Smaller on mobile */
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 18px; /* Larger on desktop */
+  }
+}
+
+@media (min-width: 1536px) {
+  html {
+    font-size: 20px; /* Even larger on very large screens */
+  }
+}
+
 :root {
   /* Base colors */
   --background: #ffffff;
   --foreground: #171717;
-  
+
+  /* Responsive spacing scale using rem */
+  --spacing-xs: 0.25rem; /* 4px base */
+  --spacing-sm: 0.5rem; /* 8px base */
+  --spacing-md: 1rem; /* 16px base */
+  --spacing-lg: 1.5rem; /* 24px base */
+  --spacing-xl: 2rem; /* 32px base */
+  --spacing-2xl: 3rem; /* 48px base */
+  --spacing-3xl: 4rem; /* 64px base */
+
+  /* Responsive font sizes using rem */
+  --font-xs: 0.75rem; /* 12px base */
+  --font-sm: 0.875rem; /* 14px base */
+  --font-base: 1rem; /* 16px base */
+  --font-lg: 1.125rem; /* 18px base */
+  --font-xl: 1.25rem; /* 20px base */
+  --font-2xl: 1.5rem; /* 24px base */
+  --font-3xl: 1.875rem; /* 30px base */
+  --font-4xl: 2.25rem; /* 36px base */
+  --font-5xl: 3rem; /* 48px base */
+
+  /* Responsive border radius using rem */
+  --radius-sm: 0.25rem; /* 4px base */
+  --radius-md: 0.375rem; /* 6px base */
+  --radius-lg: 0.5rem; /* 8px base */
+  --radius-xl: 0.75rem; /* 12px base */
+
   /* UI element colors */
   --card-background: #ffffff;
   --card-foreground: #171717;
   --card-border: #e5e7eb;
   --card-hover: #f3f4f6;
-  
+
   /* Button colors */
   --button-background: #3b82f6;
   --button-foreground: #ffffff;
   --button-hover: #2563eb;
-  
+  --button-secondary-background: #f3f4f6;
+  --button-secondary-foreground: #374151;
+  --button-secondary-hover: #e5e7eb;
+
   /* Input and form colors */
   --input-background: #ffffff;
   --input-foreground: #171717;
@@ -27,20 +80,20 @@
   --input-placeholder: #9ca3af;
   --input-disabled-bg: #f3f4f6;
   --input-disabled-fg: #9ca3af;
-  
+
   /* Form label colors */
   --label-foreground: #374151;
   --label-required: #ef4444;
   --label-optional: #6b7280;
   --form-error: #ef4444;
   --form-success: #10b981;
-  
+
   /* Checkbox and radio */
   --checkbox-background: #ffffff;
   --checkbox-border: #d1d5db;
   --checkbox-checked: #3b82f6;
   --checkbox-focus-ring: rgba(59, 130, 246, 0.2);
-  
+
   /* Select dropdown */
   --select-background: #ffffff;
   --select-foreground: #171717;
@@ -48,30 +101,30 @@
   --select-focus: #3b82f6;
   --select-focus-ring: rgba(59, 130, 246, 0.2);
   --select-chevron: #6b7280;
-  
+
   /* Text colors */
   --text-primary: #171717;
   --text-secondary: #4b5563;
   --text-muted: #6b7280;
   --text-link: #3b82f6;
   --text-link-hover: #2563eb;
-  
+
   /* Status colors */
   --success: #10b981;
   --warning: #f59e0b;
   --error: #ef4444;
-  
+
   /* Header and navigation */
   --header-background: #ffffff;
   --header-foreground: #171717;
   --header-border: #e5e7eb;
-  
+
   /* Dropdown and popover */
   --dropdown-background: #ffffff;
   --dropdown-foreground: #171717;
   --dropdown-border: #e5e7eb;
   --dropdown-hover: #f3f4f6;
-  
+
   /* Table styles */
   --table-background: #ffffff;
   --table-header-background: #f9fafb;
@@ -81,29 +134,34 @@
   --table-border: #e5e7eb;
   --table-row-hover: #f3f4f6;
   --table-striped: #f9fafb;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .dark {
   /* Base colors */
   --background: #0a0a0a;
   --foreground: #ededed;
-  
+
   /* UI element colors */
   --card-background: #1a1a1a;
   --card-foreground: #ededed;
   --card-border: #2d2d2d;
   --card-hover: #262626;
-  
+
   /* Button colors */
   --button-background: #2563eb;
   --button-foreground: #ffffff;
   --button-hover: #1d4ed8;
-  
+  --button-secondary-background: #262626;
+  --button-secondary-foreground: #d1d5db;
+  --button-secondary-hover: #404040;
+
   /* Input and form colors */
   --input-background: #1a1a1a;
   --input-foreground: #ededed;
@@ -113,20 +171,20 @@
   --input-placeholder: #6b7280;
   --input-disabled-bg: #262626;
   --input-disabled-fg: #6b7280;
-  
+
   /* Form label colors */
   --label-foreground: #d1d5db;
   --label-required: #ef4444;
   --label-optional: #9ca3af;
   --form-error: #ef4444;
   --form-success: #10b981;
-  
+
   /* Checkbox and radio */
   --checkbox-background: #1a1a1a;
   --checkbox-border: #404040;
   --checkbox-checked: #2563eb;
   --checkbox-focus-ring: rgba(37, 99, 235, 0.2);
-  
+
   /* Select dropdown */
   --select-background: #1a1a1a;
   --select-foreground: #ededed;
@@ -134,30 +192,30 @@
   --select-focus: #2563eb;
   --select-focus-ring: rgba(37, 99, 235, 0.2);
   --select-chevron: #9ca3af;
-  
+
   /* Text colors */
   --text-primary: #ededed;
   --text-secondary: #a3a3a3;
   --text-muted: #737373;
   --text-link: #3b82f6;
   --text-link-hover: #60a5fa;
-  
+
   /* Status colors */
   --success: #10b981;
   --warning: #f59e0b;
   --error: #ef4444;
-  
+
   /* Header and navigation */
   --header-background: #0a0a0a;
   --header-foreground: #ededed;
   --header-border: #2d2d2d;
-  
+
   /* Dropdown and popover */
   --dropdown-background: #1a1a1a;
   --dropdown-foreground: #ededed;
   --dropdown-border: #2d2d2d;
   --dropdown-hover: #262626;
-  
+
   /* Table styles */
   --table-background: #1a1a1a;
   --table-header-background: #262626;
@@ -167,18 +225,96 @@
   --table-border: #2d2d2d;
   --table-row-hover: #262626;
   --table-striped: #242424;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4),
+    0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4),
+    0 4px 6px -2px rgba(0, 0, 0, 0.2);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  font-size: var(--font-base);
+  line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Responsive typography classes */
+.text-responsive-xs {
+  font-size: var(--font-xs);
+}
+.text-responsive-sm {
+  font-size: var(--font-sm);
+}
+.text-responsive-base {
+  font-size: var(--font-base);
+}
+.text-responsive-lg {
+  font-size: var(--font-lg);
+}
+.text-responsive-xl {
+  font-size: var(--font-xl);
+}
+.text-responsive-2xl {
+  font-size: var(--font-2xl);
+}
+.text-responsive-3xl {
+  font-size: var(--font-3xl);
+}
+.text-responsive-4xl {
+  font-size: var(--font-4xl);
+}
+.text-responsive-5xl {
+  font-size: var(--font-5xl);
+}
+
+/* Responsive spacing classes */
+.spacing-xs {
+  margin: var(--spacing-xs);
+}
+.spacing-sm {
+  margin: var(--spacing-sm);
+}
+.spacing-md {
+  margin: var(--spacing-md);
+}
+.spacing-lg {
+  margin: var(--spacing-lg);
+}
+.spacing-xl {
+  margin: var(--spacing-xl);
+}
+.spacing-2xl {
+  margin: var(--spacing-2xl);
+}
+.spacing-3xl {
+  margin: var(--spacing-3xl);
+}
+
+.padding-xs {
+  padding: var(--spacing-xs);
+}
+.padding-sm {
+  padding: var(--spacing-sm);
+}
+.padding-md {
+  padding: var(--spacing-md);
+}
+.padding-lg {
+  padding: var(--spacing-lg);
+}
+.padding-xl {
+  padding: var(--spacing-xl);
+}
+.padding-2xl {
+  padding: var(--spacing-2xl);
+}
+.padding-3xl {
+  padding: var(--spacing-3xl);
 }
 
 /* Common components with theme support */
@@ -198,45 +334,50 @@ body {
   background-color: var(--button-hover);
 }
 
-/* Form element styling with theme support */
+/* Form element styling with theme support and responsive sizing */
 .form-container {
   background-color: var(--card-background);
   border-color: var(--card-border);
   color: var(--text-primary);
   box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
 }
 
 .form-label {
   color: var(--label-foreground);
   font-weight: 500;
+  font-size: var(--font-sm);
+  margin-bottom: var(--spacing-xs);
 }
 
 .form-label-required::after {
   content: "*";
   color: var(--label-required);
-  margin-left: 0.25rem;
+  margin-left: var(--spacing-xs);
 }
 
 .form-label-optional {
   color: var(--label-optional);
-  font-size: 0.875rem;
-  margin-left: 0.5rem;
+  font-size: var(--font-xs);
+  margin-left: var(--spacing-sm);
 }
 
-.form-input, 
+.form-input,
 .form-textarea,
 .form-select {
   background-color: var(--input-background);
   color: var(--input-foreground);
   border-color: var(--input-border);
   border-width: 1px;
-  border-radius: 0.375rem;
-  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
   width: 100%;
+  font-size: var(--font-base);
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.form-input:focus, 
+.form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
   outline: none;
@@ -244,12 +385,12 @@ body {
   box-shadow: 0 0 0 3px var(--input-focus-ring);
 }
 
-.form-input::placeholder, 
+.form-input::placeholder,
 .form-textarea::placeholder {
   color: var(--input-placeholder);
 }
 
-.form-input:disabled, 
+.form-input:disabled,
 .form-textarea:disabled,
 .form-select:disabled {
   background-color: var(--input-disabled-bg);
@@ -330,9 +471,16 @@ body {
   background-color: var(--button-background);
   color: var(--button-foreground);
   font-weight: 500;
-  border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
+  font-size: var(--font-base);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
   transition: background-color 0.15s ease-in-out;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .form-button:hover {
@@ -347,6 +495,37 @@ body {
 .form-button:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+/* Responsive button sizes */
+.form-button-sm {
+  font-size: var(--font-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.form-button-lg {
+  font-size: var(--font-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+/* Action button group for mobile responsiveness */
+.action-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .action-button-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-button-group .form-button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .input {
@@ -402,7 +581,9 @@ table tbody tr:nth-child(even) {
 }
 
 /* Ensure all table dividers respect theme */
-.divide-y, .divide-x, table.divide-y > tbody {
+.divide-y,
+.divide-x,
+table.divide-y > tbody {
   border-color: var(--table-border) !important;
 }
 

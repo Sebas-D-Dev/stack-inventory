@@ -78,23 +78,23 @@ export default function BulkProductsPage() {
     <div className="container mx-auto px-4 py-8">
       <AdminHeader title="Bulk Product Management" />
       
-      <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+      <div className="shadow-md rounded-lg p-6 mb-8">
         <h2 className="text-xl font-semibold mb-4">Import Products</h2>
-        <p className="mb-4 text-gray-600">
+        <p className="mb-4">
           Upload a CSV file to import multiple products at once. The CSV must include
           columns for name, sku, price, quantity, categoryId, and vendorId.
         </p>
         
         <form onSubmit={handleImport} className="mb-6">
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium mb-2">
               Select CSV File
             </label>
             <input
               type="file"
               accept=".csv"
               onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+              className="block w-full text-sm file:mr-4 file:py-2 file:px-4
                        file:rounded-md file:border-0 file:text-sm file:font-semibold
                        file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
@@ -102,7 +102,7 @@ export default function BulkProductsPage() {
           <button
             type="submit"
             disabled={isUploading || !file}
-            className="bg-blue-600 text-white py-2 px-4 rounded-md
+            className="bg-blue-600 py-2 px-4 rounded-md
                      hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
                      disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -111,15 +111,15 @@ export default function BulkProductsPage() {
         </form>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg p-6">
+      <div className="shadow-md rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Export Products</h2>
-        <p className="mb-4 text-gray-600">
+        <p className="mb-4">
           Download all products as a CSV file for backup or editing offline.
         </p>
         <button
           onClick={handleExport}
           disabled={isDownloading}
-          className="bg-green-600 text-white py-2 px-4 rounded-md
+          className="bg-green-600 py-2 px-4 rounded-md
                    hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500
                    disabled:opacity-50 disabled:cursor-not-allowed"
         >

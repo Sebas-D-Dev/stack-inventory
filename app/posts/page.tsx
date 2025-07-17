@@ -78,13 +78,33 @@ function PostsList() {
 
   return (
     <>
-      <div className="w-full max-w-4xl mx-auto mb-8">
+      <div
+        className="w-full max-w-4xl mx-auto"
+        style={{
+          marginBottom: `var(--spacing-xl)`,
+          padding: `0 var(--spacing-md)`,
+        }}
+      >
         {/* Success Message */}
         {showSuccess && (
-          <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+          <div
+            className="border rounded-lg"
+            style={{
+              marginBottom: `var(--spacing-lg)`,
+              padding: `var(--spacing-md)`,
+              backgroundColor: "rgb(240, 253, 244)",
+              borderColor: "rgb(34, 197, 94)",
+              color: "rgb(21, 128, 61)",
+            }}
+          >
             <div className="flex items-center">
               <svg
-                className="w-5 h-5 text-green-600 dark:text-green-400 mr-2"
+                style={{
+                  width: `var(--spacing-lg)`,
+                  height: `var(--spacing-lg)`,
+                  marginRight: `var(--spacing-sm)`,
+                  color: "rgb(34, 197, 94)",
+                }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -96,7 +116,12 @@ function PostsList() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <p className="text-green-800 dark:text-green-200">
+              <p
+                style={{
+                  fontSize: `var(--font-base)`,
+                  color: "rgb(21, 128, 61)",
+                }}
+              >
                 {isAdmin
                   ? "Your post has been created and published successfully!"
                   : "Your post has been created successfully! It's now pending approval and will be visible once reviewed by our moderation team."}
@@ -105,74 +130,83 @@ function PostsList() {
           </div>
         )}
 
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold themed-span-primary">Posts</h1>
+        <div
+          className="flex flex-col lg:flex-row lg:justify-between lg:items-center"
+          style={{
+            marginBottom: `var(--spacing-lg)`,
+            gap: `var(--spacing-md)`,
+          }}
+        >
+          <h1 className="text-responsive-3xl font-bold themed-span-primary">
+            Posts
+          </h1>
 
           {/* Action Buttons */}
           {session && (
-            <div className="flex flex-wrap gap-4">
-              {/* Create Actions */}
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-wrap gap-2">
-                  <Link
-                    href="/posts/new"
-                    className="form-button py-2 px-4 flex items-center"
-                  >
-                    <span>New Post</span>
-                  </Link>
-                  <Link
-                    href="/posts/pending"
-                    className="py-2 px-4 flex items-center rounded-lg transition-colors bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/50"
-                  >
-                    <svg
-                      className="w-4 h-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span>Pending Posts</span>
-                  </Link>
-                  <Link
-                    href="/posts?filter=mine"
-                    className={`py-2 px-4 flex items-center rounded-lg transition-colors ${
-                      filter === "mine"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
-                    }`}
-                  >
-                    <span>My Posts</span>
-                  </Link>
-                  <Link
-                    href="/posts?filter=all"
-                    className={`py-2 px-4 flex items-center rounded-lg transition-colors ${
-                      filter === "all" || !filter
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
-                    }`}
-                  >
-                    <span>All Posts</span>
-                  </Link>
-                  {isAdmin && (
-                    <Link
-                      href="/admin/posts/history"
-                      className="py-2 px-4 flex items-center rounded-lg transition-colors"
-                      style={{
-                        backgroundColor: "var(--button-background)",
-                        color: "var(--button-foreground)",
-                      }}
-                    >
-                      <span>Post History</span>
-                    </Link>
-                  )}
-                </div>
-              </div>
+            <div className="action-button-group">
+              <Link href="/posts/new" className="form-button">
+                <span>New Post</span>
+              </Link>
+              <Link
+                href="/posts/pending"
+                className="form-button"
+                style={{
+                  backgroundColor: "rgb(254, 240, 138)",
+                  color: "rgb(146, 64, 14)",
+                  borderRadius: `var(--radius-md)`,
+                }}
+              >
+                <svg
+                  style={{
+                    width: `var(--spacing-md)`,
+                    height: `var(--spacing-md)`,
+                    marginRight: `var(--spacing-xs)`,
+                  }}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>Pending Posts</span>
+              </Link>
+              <Link
+                href="/posts?filter=mine"
+                className="form-button"
+                style={{
+                  backgroundColor:
+                    filter === "mine"
+                      ? "rgb(37, 99, 235)"
+                      : "rgb(229, 231, 235)",
+                  color: filter === "mine" ? "white" : "rgb(75, 85, 99)",
+                }}
+              >
+                <span>My Posts</span>
+              </Link>
+              <Link
+                href="/posts?filter=all"
+                className="form-button"
+                style={{
+                  backgroundColor:
+                    filter === "all" || !filter
+                      ? "rgb(37, 99, 235)"
+                      : "rgb(229, 231, 235)",
+                  color:
+                    filter === "all" || !filter ? "white" : "rgb(75, 85, 99)",
+                }}
+              >
+                <span>All Posts</span>
+              </Link>
+              {isAdmin && (
+                <Link href="/admin/posts/history" className="form-button">
+                  <span>Post History</span>
+                </Link>
+              )}
             </div>
           )}
         </div>
@@ -241,7 +275,10 @@ function PostsList() {
 
 export default function PostsPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start p-8">
+    <div
+      className="min-h-screen flex flex-col items-center justify-start"
+      style={{ padding: `var(--spacing-xl)` }}
+    >
       <Suspense
         fallback={
           <div className="themed-loading-container themed-loading-fullscreen">

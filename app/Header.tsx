@@ -8,6 +8,8 @@ import {
   SunIcon,
   MoonIcon,
   ComputerDesktopIcon,
+  Bars3Icon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -19,7 +21,8 @@ import logoImage from "./logo.png";
 export default function Header() {
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isThemeOpen, setIsThemeOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
   // Check if current path is login or register page
@@ -35,19 +38,45 @@ export default function Header() {
   // Handle theme change
   const changeTheme = (newTheme: string) => {
     setTheme(newTheme);
-    setIsOpen(false);
+    setIsThemeOpen(false);
   };
+
+  // Toggle mobile menu
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  // Navigation items for desktop and mobile
+  const navigationItems = [
+    { href: "/posts", label: "Posts" },
+    { href: "/dashboard", label: "Dashboard" },
+    ...(session?.user
+      ? [{ href: "/inventory-assistant", label: "AI Assistant" }]
+      : []),
+    ...(session?.user &&
+    canAccessAdminFeatures(session.user.role || "") &&
+    session.user.isAdmin
+      ? [{ href: "/admin/dashboard", label: "Admin Dashboard" }]
+      : []),
+    ...(session?.user && canModerateContent(session.user.role || "")
+      ? [{ href: "/admin/moderation", label: "Moderation" }]
+      : []),
+  ];
 
   return (
     <header
       className={cn(
-        "w-full py-4 px-8 border-b transition-colors",
+        "w-full border-b transition-colors",
         "bg-white dark:bg-gray-900",
         "border-gray-200 dark:border-gray-800"
       )}
+      style={{
+        padding: `var(--spacing-md) var(--spacing-lg)`,
+      }}
     >
       <nav className="flex justify-between items-center">
-        <div className="flex items-center space-x-2">
+        {/* Logo and Brand */}
+        <div className="flex items-center" style={{ gap: `var(--spacing-sm)` }}>
           <Image
             src={logoImage}
             alt="Site Logo"
@@ -58,154 +87,362 @@ export default function Header() {
           <Link
             href="/"
             className={cn(
-              "text-xl font-bold transition-colors",
+              "font-bold transition-colors",
               "text-gray-900 dark:text-white"
             )}
+            style={{ fontSize: `var(--font-xl)` }}
           >
             Stack Inventory
           </Link>
         </div>
-        <div className="flex items-center space-x-4">
+
+        {/* Desktop Navigation */}
+        <div
+          className="hidden dropdown:flex items-center"
+          style={{ gap: `var(--spacing-md)` }}
+        >
+          {/* Navigation Links - Desktop */}
+          {(!isAuthPage || session) && (
+            <div
+              className="flex items-center"
+              style={{ gap: `var(--spacing-sm)` }}
+            >
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(buttonVariants({ variant: "default" }))}
+                  style={{
+                    fontSize: `var(--font-sm)`,
+                    padding: `var(--spacing-sm) var(--spacing-md)`,
+                  }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Right side content */}
+        <div
+          className={cn(
+            "flex items-center",
+            // On auth pages without session, push theme switcher to the right
+            !session && isAuthPage ? "ml-auto" : ""
+          )}
+          style={{ gap: `var(--spacing-sm)` }}
+        >
           {/* Theme Switcher - Always visible */}
           <div className="relative">
             <button
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => setIsThemeOpen(!isThemeOpen)}
               className={cn(
-                "flex items-center justify-center p-2 rounded-lg transition-colors",
+                "flex items-center justify-center rounded-lg transition-colors",
                 "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white",
                 "border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
               )}
+              style={{
+                padding: `var(--spacing-sm)`,
+              }}
               aria-label="Change theme"
             >
-              {theme === "light" && <SunIcon className="h-5 w-5" />}
-              {theme === "dark" && <MoonIcon className="h-5 w-5" />}
+              {theme === "light" && (
+                <SunIcon
+                  style={{
+                    width: `var(--spacing-lg)`,
+                    height: `var(--spacing-lg)`,
+                  }}
+                />
+              )}
+              {theme === "dark" && (
+                <MoonIcon
+                  style={{
+                    width: `var(--spacing-lg)`,
+                    height: `var(--spacing-lg)`,
+                  }}
+                />
+              )}
               {theme === "system" && (
-                <ComputerDesktopIcon className="h-5 w-5" />
+                <ComputerDesktopIcon
+                  style={{
+                    width: `var(--spacing-lg)`,
+                    height: `var(--spacing-lg)`,
+                  }}
+                />
               )}
             </button>
 
-            {isOpen && (
+            {isThemeOpen && (
               <div
                 className={cn(
-                  "absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-10 border",
+                  "absolute right-0 mt-2 w-48 rounded-md shadow-lg z-10 border",
                   "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                 )}
+                style={{
+                  padding: `var(--spacing-xs) 0`,
+                }}
               >
                 <button
                   onClick={() => changeTheme("light")}
                   className={cn(
-                    "flex items-center px-4 py-2 text-sm w-full text-left transition-colors",
+                    "flex items-center w-full text-left transition-colors",
                     "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                   )}
+                  style={{
+                    padding: `var(--spacing-sm) var(--spacing-md)`,
+                    fontSize: `var(--font-sm)`,
+                    gap: `var(--spacing-sm)`,
+                  }}
                 >
-                  <SunIcon className="h-5 w-5 mr-2" />
+                  <SunIcon
+                    style={{
+                      width: `var(--spacing-lg)`,
+                      height: `var(--spacing-lg)`,
+                    }}
+                  />
                   Light
                 </button>
                 <button
                   onClick={() => changeTheme("dark")}
                   className={cn(
-                    "flex items-center px-4 py-2 text-sm w-full text-left transition-colors",
+                    "flex items-center w-full text-left transition-colors",
                     "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                   )}
+                  style={{
+                    padding: `var(--spacing-sm) var(--spacing-md)`,
+                    fontSize: `var(--font-sm)`,
+                    gap: `var(--spacing-sm)`,
+                  }}
                 >
-                  <MoonIcon className="h-5 w-5 mr-2" />
+                  <MoonIcon
+                    style={{
+                      width: `var(--spacing-lg)`,
+                      height: `var(--spacing-lg)`,
+                    }}
+                  />
                   Dark
                 </button>
                 <button
                   onClick={() => changeTheme("system")}
                   className={cn(
-                    "flex items-center px-4 py-2 text-sm w-full text-left transition-colors",
+                    "flex items-center w-full text-left transition-colors",
                     "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                   )}
+                  style={{
+                    padding: `var(--spacing-sm) var(--spacing-md)`,
+                    fontSize: `var(--font-sm)`,
+                    gap: `var(--spacing-sm)`,
+                  }}
                 >
-                  <ComputerDesktopIcon className="h-5 w-5 mr-2" />
+                  <ComputerDesktopIcon
+                    style={{
+                      width: `var(--spacing-lg)`,
+                      height: `var(--spacing-lg)`,
+                    }}
+                  />
                   System
                 </button>
               </div>
             )}
           </div>
 
-          {/* Navigation links - Only shown when not on auth pages or when signed in */}
+          {/* Mobile Menu Toggle - Only show when navigation should be visible and below 1350px */}
           {(!isAuthPage || session) && (
-            <>
-              <Link
-                href="/posts"
-                className={cn(buttonVariants({ variant: "default" }))}
-              >
-                Posts
-              </Link>
-              <Link
-                href="/dashboard"
-                className={cn(buttonVariants({ variant: "default" }))}
-              >
-                Dashboard
-              </Link>
-              {session?.user && (
-                <Link
-                  href="/inventory-assistant"
-                  className={cn(buttonVariants({ variant: "default" }))}
-                >
-                  AI Assistant
-                </Link>
-              )}
-              {session?.user &&
-                canAccessAdminFeatures(session.user.role || "") &&
-                session.user.isAdmin && (
-                  <Link
-                    href="/admin/dashboard"
-                    className={cn(buttonVariants({ variant: "default" }))}
-                  >
-                    Admin Dashboard
-                  </Link>
-                )}
-              {session?.user && canModerateContent(session.user.role || "") && (
-                <Link
-                  href="/admin/moderation"
-                  className={cn(buttonVariants({ variant: "outline" }))}
-                >
-                  Moderation
-                </Link>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* Authenticated user section */}
-        {session ? (
-          <div className="flex items-center space-x-4">
-            <Link
-              href="/profile"
-              className={cn(buttonVariants({ variant: "default" }))}
-            >
-              Profile
-            </Link>
-            <div className={cn("text-sm", "text-gray-600 dark:text-gray-400")}>
-              {session.user?.name && (
-                <div className={cn("text-gray-900 dark:text-white")}>
-                  {session.user.name}
-                </div>
-              )}
-              <div>{session.user?.email}</div>
-            </div>
             <button
-              onClick={() => signOut()}
-              className={cn(buttonVariants({ variant: "destructive" }))}
+              onClick={toggleMobileMenu}
+              className={cn(
+                "dropdown:hidden flex items-center justify-center rounded-lg transition-colors",
+                "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white",
+                "border border-gray-200 dark:border-gray-700"
+              )}
+              style={{
+                padding: `var(--spacing-sm)`,
+              }}
+              aria-label="Toggle mobile menu"
             >
-              Sign Out
+              {isMobileMenuOpen ? (
+                <XMarkIcon
+                  style={{
+                    width: `var(--spacing-lg)`,
+                    height: `var(--spacing-lg)`,
+                  }}
+                />
+              ) : (
+                <Bars3Icon
+                  style={{
+                    width: `var(--spacing-lg)`,
+                    height: `var(--spacing-lg)`,
+                  }}
+                />
+              )}
             </button>
+          )}
+
+          {/* User Section - Desktop */}
+          <div
+            className="hidden dropdown:flex items-center"
+            style={{ gap: `var(--spacing-md)` }}
+          >
+            {session ? (
+              <>
+                <Link
+                  href="/profile"
+                  className={cn(buttonVariants({ variant: "default" }))}
+                  style={{
+                    fontSize: `var(--font-sm)`,
+                    padding: `var(--spacing-sm) var(--spacing-md)`,
+                  }}
+                >
+                  Profile
+                </Link>
+                <div
+                  className={cn("text-gray-600 dark:text-gray-400")}
+                  style={{ fontSize: `var(--font-sm)` }}
+                >
+                  {session.user?.name && (
+                    <div className={cn("text-gray-900 dark:text-white")}>
+                      {session.user.name}
+                    </div>
+                  )}
+                  <div>{session.user?.email}</div>
+                </div>
+                <button
+                  onClick={() => signOut()}
+                  className={cn(buttonVariants({ variant: "destructive" }))}
+                  style={{
+                    fontSize: `var(--font-sm)`,
+                    padding: `var(--spacing-sm) var(--spacing-md)`,
+                  }}
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              !isAuthPage && (
+                <Link
+                  href="/login"
+                  className={cn(buttonVariants({ variant: "default" }))}
+                  style={{
+                    fontSize: `var(--font-sm)`,
+                    padding: `var(--spacing-sm) var(--spacing-md)`,
+                  }}
+                >
+                  Sign In
+                </Link>
+              )
+            )}
           </div>
-        ) : (
-          // Only show login button when not on an auth page
-          !isAuthPage && (
-            <Link
-              href="/login"
-              className={cn(buttonVariants({ variant: "default" }))}
-            >
-              Sign In
-            </Link>
-          )
-        )}
+        </div>
       </nav>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div
+          className="dropdown:hidden mt-4 border-t border-gray-200 dark:border-gray-700"
+          style={{ paddingTop: `var(--spacing-md)` }}
+        >
+          <div className="flex flex-col" style={{ gap: `var(--spacing-sm)` }}>
+            {/* Navigation Links - Mobile */}
+            {(!isAuthPage || session) &&
+              navigationItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "w-full text-left transition-colors rounded-lg",
+                    "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                  )}
+                  style={{
+                    padding: `var(--spacing-sm) var(--spacing-md)`,
+                    fontSize: `var(--font-base)`,
+                  }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+            {/* User Section - Mobile */}
+            <div
+              className="border-t border-gray-200 dark:border-gray-700"
+              style={{
+                paddingTop: `var(--spacing-sm)`,
+                marginTop: `var(--spacing-sm)`,
+              }}
+            >
+              {session ? (
+                <div
+                  className="flex flex-col"
+                  style={{ gap: `var(--spacing-sm)` }}
+                >
+                  <div
+                    className="text-gray-600 dark:text-gray-400"
+                    style={{
+                      padding: `var(--spacing-sm) var(--spacing-md)`,
+                      fontSize: `var(--font-sm)`,
+                    }}
+                  >
+                    {session.user?.name && (
+                      <div className="text-gray-900 dark:text-white font-medium">
+                        {session.user.name}
+                      </div>
+                    )}
+                    <div>{session.user?.email}</div>
+                  </div>
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "w-full text-left transition-colors rounded-lg",
+                      "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                    )}
+                    style={{
+                      padding: `var(--spacing-sm) var(--spacing-md)`,
+                      fontSize: `var(--font-base)`,
+                    }}
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={cn(
+                      "w-full text-left transition-colors rounded-lg",
+                      "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    )}
+                    style={{
+                      padding: `var(--spacing-sm) var(--spacing-md)`,
+                      fontSize: `var(--font-base)`,
+                    }}
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                !isAuthPage && (
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "w-full text-left transition-colors rounded-lg",
+                      "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                    )}
+                    style={{
+                      padding: `var(--spacing-sm) var(--spacing-md)`,
+                      fontSize: `var(--font-base)`,
+                    }}
+                  >
+                    Sign In
+                  </Link>
+                )
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

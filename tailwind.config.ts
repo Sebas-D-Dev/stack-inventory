@@ -9,6 +9,9 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      screens: {
+        'dropdown': '1350px', // Custom breakpoint for dropdown button
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

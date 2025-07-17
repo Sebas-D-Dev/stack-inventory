@@ -5,6 +5,9 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
+// Add dynamic export to prevent SSG
+export const dynamic = "force-dynamic";
+
 interface PendingPost {
   id: number;
   title: string;

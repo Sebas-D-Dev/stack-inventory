@@ -46,15 +46,18 @@ export default async function ContentModerationPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className={cn(textVariants({ variant: "h1" }))}>
-            Content Moderation
-          </h1>
-          <p className={cn(textVariants({ variant: "muted" }))}>
-            Review and moderate user-generated content
-          </p>
-        </div>
+      {/* Page Title */}
+      <div className="mb-6">
+        <h1 className={cn(textVariants({ variant: "h1" }))}>
+          Content Moderation
+        </h1>
+        <p className={cn(textVariants({ variant: "muted" }))}>
+          Review and moderate user-generated content
+        </p>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-6">
         <div className="flex gap-4">
           <Link
             href="/admin/dashboard"

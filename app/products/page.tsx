@@ -171,369 +171,385 @@ function ProductsList() {
         </div>
       ) : (
         <>
-          <div className="flex justify-between items-center mb-8">
+          {/* Page Title */}
+          <div className="mb-6">
             <h1
               className="text-3xl font-bold"
               style={{ color: "var(--text-primary)" }}
             >
               Products
             </h1>
+          </div>
 
-            {/* Search and Add Product */}
-            <div className="flex items-center gap-4">
-              <div className="relative">
+          {/* Search and Add Product Row */}
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-6">
+            <div className="relative flex-1 max-w-md">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search products..."
+                className="w-full pl-10 pr-4 py-2 rounded-lg border"
+                style={{
+                  backgroundColor: "var(--input-background)",
+                  borderColor: "var(--input-border)",
+                  color: "var(--text-primary)",
+                }}
+              />
+              <Search
+                className="absolute left-3 top-2.5 h-5 w-5"
+                style={{ color: "var(--text-secondary)" }}
+              />
+            </div>
+
+            <Link
+              href="/products/new"
+              className="px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+              style={{
+                backgroundColor: "var(--button-background)",
+                color: "var(--button-foreground)",
+              }}
+            >
+              Add New Product
+            </Link>
+          </div>
+
+          {/* Filters Section */}
+          <div
+            className="p-4 rounded-lg mb-6"
+            style={{
+              backgroundColor: "var(--card-background)",
+              borderColor: "var(--card-border)",
+              borderWidth: "1px",
+            }}
+          >
+            <h2
+              className="font-semibold mb-4"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Filters
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              <div>
+                <label
+                  className="block text-sm mb-1"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Category
+                </label>
+                <select
+                  name="category"
+                  value={filters.category}
+                  onChange={handleFilterChange}
+                  className="w-full p-2 rounded-md border"
+                  style={{
+                    backgroundColor: "var(--input-background)",
+                    borderColor: "var(--input-border)",
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label
+                  className="block text-sm mb-1"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Vendor
+                </label>
+                <select
+                  name="vendor"
+                  value={filters.vendor}
+                  onChange={handleFilterChange}
+                  className="w-full p-2 rounded-md border"
+                  style={{
+                    backgroundColor: "var(--input-background)",
+                    borderColor: "var(--input-border)",
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  <option value="">All Vendors</option>
+                  {vendors.map((vendor) => (
+                    <option key={vendor.id} value={vendor.id}>
+                      {vendor.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label
+                  className="block text-sm mb-1"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Min Price
+                </label>
                 <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search products..."
-                  className="pl-10 pr-4 py-2 rounded-lg border"
+                  type="number"
+                  name="minPrice"
+                  value={filters.minPrice}
+                  onChange={handleFilterChange}
+                  placeholder="Min"
+                  className="w-full p-2 rounded-md border"
                   style={{
                     backgroundColor: "var(--input-background)",
                     borderColor: "var(--input-border)",
                     color: "var(--text-primary)",
                   }}
                 />
-                <Search
-                  className="absolute left-3 top-2.5 h-5 w-5"
+              </div>
+
+              <div>
+                <label
+                  className="block text-sm mb-1"
                   style={{ color: "var(--text-secondary)" }}
+                >
+                  Max Price
+                </label>
+                <input
+                  type="number"
+                  name="maxPrice"
+                  value={filters.maxPrice}
+                  onChange={handleFilterChange}
+                  placeholder="Max"
+                  className="w-full p-2 rounded-md border"
+                  style={{
+                    backgroundColor: "var(--input-background)",
+                    borderColor: "var(--input-border)",
+                    color: "var(--text-primary)",
+                  }}
                 />
               </div>
 
-              <Link
-                href="/products/new"
-                className="px-4 py-2 rounded-lg transition-colors"
+              <div>
+                <label
+                  className="block text-sm mb-1"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Min Quantity
+                </label>
+                <input
+                  type="number"
+                  name="minQuantity"
+                  value={filters.minQuantity}
+                  onChange={handleFilterChange}
+                  placeholder="Min"
+                  className="w-full p-2 rounded-md border"
+                  style={{
+                    backgroundColor: "var(--input-background)",
+                    borderColor: "var(--input-border)",
+                    color: "var(--text-primary)",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label
+                  className="block text-sm mb-1"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Max Quantity
+                </label>
+                <input
+                  type="number"
+                  name="maxQuantity"
+                  value={filters.maxQuantity}
+                  onChange={handleFilterChange}
+                  placeholder="Max"
+                  className="w-full p-2 rounded-md border"
+                  style={{
+                    backgroundColor: "var(--input-background)",
+                    borderColor: "var(--input-border)",
+                    color: "var(--text-primary)",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <button
+                onClick={resetFilters}
+                className="py-2 px-4 rounded-md"
                 style={{
-                  backgroundColor: "var(--button-background)",
-                  color: "var(--button-foreground)",
+                  backgroundColor: "var(--button-secondary-background)",
+                  color: "var(--button-secondary-foreground)",
                 }}
               >
-                Add New Product
-              </Link>
+                Reset Filters
+              </button>
             </div>
           </div>
 
-          {/* Main content with sidebar and products table */}
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Sidebar filters */}
-            <div
-              className="md:w-64 p-4 rounded-lg sticky top-4 self-start"
-              style={{
-                backgroundColor: "var(--card-background)",
-                borderColor: "var(--card-border)",
-                borderWidth: "1px",
-              }}
-            >
-              <h2
-                className="font-semibold mb-4"
-                style={{ color: "var(--text-primary)" }}
+          {/* Products Table Section */}
+          <div>
+            {filteredProducts.length === 0 ? (
+              <div
+                className="text-center p-8 rounded-lg"
+                style={{
+                  backgroundColor: "var(--card-background)",
+                  borderColor: "var(--card-border)",
+                  borderWidth: "1px",
+                  color: "var(--text-secondary)",
+                }}
               >
-                Filters
-              </h2>
-
-              <div className="space-y-4">
-                <div>
-                  <label
-                    className="block text-sm mb-1"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    Category
-                  </label>
-                  <select
-                    name="category"
-                    value={filters.category}
-                    onChange={handleFilterChange}
-                    className="w-full p-2 rounded-md border"
-                    style={{
-                      backgroundColor: "var(--input-background)",
-                      borderColor: "var(--input-border)",
-                      color: "var(--text-primary)",
-                    }}
-                  >
-                    <option value="">All Categories</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label
-                    className="block text-sm mb-1"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    Vendor
-                  </label>
-                  <select
-                    name="vendor"
-                    value={filters.vendor}
-                    onChange={handleFilterChange}
-                    className="w-full p-2 rounded-md border"
-                    style={{
-                      backgroundColor: "var(--input-background)",
-                      borderColor: "var(--input-border)",
-                      color: "var(--text-primary)",
-                    }}
-                  >
-                    <option value="">All Vendors</option>
-                    {vendors.map((vendor) => (
-                      <option key={vendor.id} value={vendor.id}>
-                        {vendor.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label
-                    className="block text-sm mb-1"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    Price Range
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      name="minPrice"
-                      value={filters.minPrice}
-                      onChange={handleFilterChange}
-                      placeholder="Min"
-                      className="w-1/2 p-2 rounded-md border"
-                      style={{
-                        backgroundColor: "var(--input-background)",
-                        borderColor: "var(--input-border)",
-                        color: "var(--text-primary)",
-                      }}
-                    />
-                    <input
-                      type="number"
-                      name="maxPrice"
-                      value={filters.maxPrice}
-                      onChange={handleFilterChange}
-                      placeholder="Max"
-                      className="w-1/2 p-2 rounded-md border"
-                      style={{
-                        backgroundColor: "var(--input-background)",
-                        borderColor: "var(--input-border)",
-                        color: "var(--text-primary)",
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    className="block text-sm mb-1"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    Quantity Range
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      name="minQuantity"
-                      value={filters.minQuantity}
-                      onChange={handleFilterChange}
-                      placeholder="Min"
-                      className="w-1/2 p-2 rounded-md border"
-                      style={{
-                        backgroundColor: "var(--input-background)",
-                        borderColor: "var(--input-border)",
-                        color: "var(--text-primary)",
-                      }}
-                    />
-                    <input
-                      type="number"
-                      name="maxQuantity"
-                      value={filters.maxQuantity}
-                      onChange={handleFilterChange}
-                      placeholder="Max"
-                      className="w-1/2 p-2 rounded-md border"
-                      style={{
-                        backgroundColor: "var(--input-background)",
-                        borderColor: "var(--input-border)",
-                        color: "var(--text-primary)",
-                      }}
-                    />
-                  </div>
-                </div>
-
+                <p>No products match your search or filters.</p>
                 <button
                   onClick={resetFilters}
-                  className="w-full mt-4 py-2 px-4 rounded-md"
+                  className="mt-4 py-2 px-4 rounded-md"
                   style={{
                     backgroundColor: "var(--button-secondary-background)",
                     color: "var(--button-secondary-foreground)",
                   }}
                 >
-                  Reset Filters
+                  Clear Filters
                 </button>
               </div>
-            </div>
-
-            {/* Products table */}
-            <div className="flex-1">
-              {filteredProducts.length === 0 ? (
-                <div
-                  className="text-center p-8 rounded-lg"
+            ) : (
+              <div
+                className="overflow-x-auto rounded-lg shadow-sm"
+                style={{ backgroundColor: "var(--card-background)" }}
+              >
+                <table
+                  className="min-w-full"
                   style={{
-                    backgroundColor: "var(--card-background)",
-                    borderColor: "var(--card-border)",
-                    borderWidth: "1px",
-                    color: "var(--text-secondary)",
+                    backgroundColor: "var(--table-background)",
                   }}
                 >
-                  <p>No products match your search or filters.</p>
-                  <button
-                    onClick={resetFilters}
-                    className="mt-4 py-2 px-4 rounded-md"
+                  <thead
                     style={{
-                      backgroundColor: "var(--button-secondary-background)",
-                      color: "var(--button-secondary-foreground)",
+                      backgroundColor: "var(--table-header-background)",
                     }}
                   >
-                    Clear Filters
-                  </button>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table
-                    className="min-w-full"
+                    <tr>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium uppercase"
+                        style={{ color: "var(--table-header-foreground)" }}
+                      >
+                        Name
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium uppercase"
+                        style={{ color: "var(--table-header-foreground)" }}
+                      >
+                        SKU
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium uppercase"
+                        style={{ color: "var(--table-header-foreground)" }}
+                      >
+                        Category
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium uppercase"
+                        style={{ color: "var(--table-header-foreground)" }}
+                      >
+                        Vendor
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium uppercase"
+                        style={{ color: "var(--table-header-foreground)" }}
+                      >
+                        Quantity
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium uppercase"
+                        style={{ color: "var(--table-header-foreground)" }}
+                      >
+                        Price
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium uppercase"
+                        style={{ color: "var(--table-header-foreground)" }}
+                      >
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody
                     style={{
-                      backgroundColor: "var(--table-background)",
+                      borderColor: "var(--table-border)",
+                      borderTopWidth: "1px",
                     }}
                   >
-                    <thead
-                      style={{
-                        backgroundColor: "var(--table-header-background)",
-                      }}
-                    >
-                      <tr>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium uppercase"
-                          style={{ color: "var(--table-header-foreground)" }}
-                        >
-                          Name
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium uppercase"
-                          style={{ color: "var(--table-header-foreground)" }}
-                        >
-                          SKU
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium uppercase"
-                          style={{ color: "var(--table-header-foreground)" }}
-                        >
-                          Category
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium uppercase"
-                          style={{ color: "var(--table-header-foreground)" }}
-                        >
-                          Vendor
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium uppercase"
-                          style={{ color: "var(--table-header-foreground)" }}
-                        >
-                          Quantity
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium uppercase"
-                          style={{ color: "var(--table-header-foreground)" }}
-                        >
-                          Price
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium uppercase"
-                          style={{ color: "var(--table-header-foreground)" }}
-                        >
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody
-                      style={{
-                        borderColor: "var(--table-border)",
-                        borderTopWidth: "1px",
-                      }}
-                    >
-                      {/* Keep existing product row rendering code */}
-                      {filteredProducts.map((product) => (
-                        <tr
-                          key={product.id}
+                    {filteredProducts.map((product) => (
+                      <tr
+                        key={product.id}
+                        style={{
+                          borderColor: "var(--table-border)",
+                          borderTopWidth: "1px",
+                        }}
+                      >
+                        <td
+                          className="px-6 py-4 whitespace-nowrap text-sm font-medium"
                           style={{
-                            borderColor: "var(--table-border)",
-                            borderTopWidth: "1px",
+                            color: "var(--table-cell-foreground-strong)",
                           }}
                         >
-                          <td
-                            className="px-6 py-4 whitespace-nowrap text-sm font-medium"
-                            style={{
-                              color: "var(--table-cell-foreground-strong)",
-                            }}
+                          {product.name}
+                        </td>
+                        <td
+                          className="px-6 py-4 whitespace-nowrap text-sm"
+                          style={{ color: "var(--table-cell-foreground)" }}
+                        >
+                          {product.sku}
+                        </td>
+                        <td
+                          className="px-6 py-4 whitespace-nowrap text-sm"
+                          style={{ color: "var(--table-cell-foreground)" }}
+                        >
+                          {product.category.name}
+                        </td>
+                        <td
+                          className="px-6 py-4 whitespace-nowrap text-sm"
+                          style={{ color: "var(--table-cell-foreground)" }}
+                        >
+                          {product.vendor.name}
+                        </td>
+                        <td
+                          className="px-6 py-4 whitespace-nowrap text-sm"
+                          style={{ color: "var(--table-cell-foreground)" }}
+                        >
+                          <span
+                            className={`${
+                              product.quantity <= 10
+                                ? "text-red-600 font-medium"
+                                : ""
+                            }`}
                           >
-                            {product.name}
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap text-sm"
-                            style={{ color: "var(--table-cell-foreground)" }}
+                            {product.quantity}
+                          </span>
+                        </td>
+                        <td
+                          className="px-6 py-4 whitespace-nowrap text-sm"
+                          style={{ color: "var(--table-cell-foreground)" }}
+                        >
+                          ${product.price.toFixed(2)}
+                        </td>
+                        <td
+                          className="px-6 py-4 whitespace-nowrap text-sm"
+                          style={{ color: "var(--table-cell-foreground)" }}
+                        >
+                          <Link
+                            href={`/products/${product.id}`}
+                            className="text-blue-500 hover:underline mr-3"
                           >
-                            {product.sku}
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap text-sm"
-                            style={{ color: "var(--table-cell-foreground)" }}
-                          >
-                            {product.category.name}
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap text-sm"
-                            style={{ color: "var(--table-cell-foreground)" }}
-                          >
-                            {product.vendor.name}
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap text-sm"
-                            style={{ color: "var(--table-cell-foreground)" }}
-                          >
-                            <span
-                              className={`${
-                                product.quantity <= 10
-                                  ? "text-red-600 font-medium"
-                                  : ""
-                              }`}
-                            >
-                              {product.quantity}
-                            </span>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap text-sm"
-                            style={{ color: "var(--table-cell-foreground)" }}
-                          >
-                            ${product.price.toFixed(2)}
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap text-sm"
-                            style={{ color: "var(--table-cell-foreground)" }}
-                          >
-                            <Link
-                              href={`/products/${product.id}`}
-                              className="text-blue-500 hover:underline mr-3"
-                            >
-                              View
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </>
       )}
