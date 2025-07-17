@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 interface PendingPost {
@@ -12,7 +12,7 @@ interface PendingPost {
   modStatus: string;
 }
 
-export default function PendingPostsPage() {
+function PendingPostsContent() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const [pendingPosts, setPendingPosts] = useState<PendingPost[]>([]);
@@ -165,5 +165,24 @@ export default function PendingPostsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function PendingPostsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex flex-col items-center justify-start p-8">
+          <div className="max-w-3xl w-full text-center p-8">
+            <div className="themed-loading-container">
+              <div className="themed-spinner"></div>
+              <p className="themed-loading-text">Loading pending posts...</p>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <PendingPostsContent />
+    </Suspense>
   );
 }
