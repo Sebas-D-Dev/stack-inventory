@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { createGuideline } from "./actions";
+import { createGuideline, updateGuideline } from "./actions";
+import { cn } from "@/lib/cn";
+import { buttonVariants } from "@/lib/button-variants";
+import { textVariants } from "@/lib/ui-variants";
 
 interface GuidelineFormProps {
   guideline?: {
@@ -33,8 +36,14 @@ export default function GuidelineForm({ guideline }: GuidelineFormProps) {
 
     try {
       if (guideline) {
-        // Will be implemented in the actions file
+        // Update existing guideline
+        await updateGuideline(guideline.id, { title, description });
         setSuccess("Guideline updated successfully");
+
+        // Redirect back to guidelines page after successful update
+        setTimeout(() => {
+          window.location.href = "/admin/moderation/guidelines";
+        }, 1000);
       } else {
         // Create new guideline
         await createGuideline({ title, description });
@@ -51,51 +60,95 @@ export default function GuidelineForm({ guideline }: GuidelineFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="title" className="form-label">Guideline Title</label>
+        <label
+          htmlFor="title"
+          className={cn(
+            textVariants({ variant: "small" }),
+            "block mb-2 font-medium"
+          )}
+        >
+          Guideline Title *
+        </label>
         <input
           type="text"
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="form-input"
-          placeholder="e.g. No offensive language"
+          className={cn(
+            "w-full px-3 py-2 border border-gray-300 dark:border-gray-600",
+            "rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+            "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
+            "placeholder-gray-500 dark:placeholder-gray-400"
+          )}
+          placeholder="e.g., No offensive language"
+          required
         />
       </div>
-      
+
       <div>
-        <label htmlFor="description" className="form-label">Guideline Description</label>
+        <label
+          htmlFor="description"
+          className={cn(
+            textVariants({ variant: "small" }),
+            "block mb-2 font-medium"
+          )}
+        >
+          Guideline Description *
+        </label>
         <textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="form-textarea"
-          rows={3}
-          placeholder="Describe this guideline in detail..."
+          className={cn(
+            "w-full px-3 py-2 border border-gray-300 dark:border-gray-600",
+            "rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+            "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
+            "placeholder-gray-500 dark:placeholder-gray-400",
+            "resize-vertical min-h-[100px]"
+          )}
+          rows={4}
+          placeholder="Describe this guideline in detail. Be specific about what is and isn't allowed."
+          required
         />
       </div>
 
       {error && (
-        <div className="text-red-500 text-sm">{error}</div>
+        <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+          <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
+        </div>
       )}
 
       {success && (
-        <div className="text-green-500 text-sm">{success}</div>
+        <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+          <p className="text-green-800 dark:text-green-200 text-sm">
+            {success}
+          </p>
+        </div>
       )}
 
-      <button
-        type="submit"
-        className="form-button py-2 px-4"
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <>
-            <div className="themed-spinner themed-spinner-sm mr-2"></div>
-            <span>{guideline ? "Updating..." : "Creating..."}</span>
-          </>
-        ) : guideline ? "Update Guideline" : "Create Guideline"}
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          className={cn(
+            buttonVariants({ variant: "default" }),
+            "min-w-[120px]"
+          )}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              <span>{guideline ? "Updating..." : "Creating..."}</span>
+            </div>
+          ) : guideline ? (
+            "Update Guideline"
+          ) : (
+            "Create Guideline"
+          )}
+        </button>
+      </div>
     </form>
   );
 }

@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/auth";
-import { canAccessAdminFeatures } from "@/lib/permissions";
+import { canAccessAdminDashboard } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import OrderStatusBadge from "./OrderStatusBadge";
 import OrderManagementActions from "./OrderManagementActions";
@@ -29,7 +29,7 @@ export default async function AdminOrderManagement({
 
   // Check if user can access admin features
   const session = await getServerSession(authOptions);
-  if (!session?.user || !canAccessAdminFeatures(session.user.role || "")) {
+  if (!session?.user || !canAccessAdminDashboard(session.user.role || "")) {
     redirect("/");
   }
 
@@ -247,9 +247,7 @@ export default async function AdminOrderManagement({
             style={{ backgroundColor: "var(--card-background)" }}
           >
             {orders.map((order) => (
-              <tr
-                key={order.id}
-              >
+              <tr key={order.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
                     <div

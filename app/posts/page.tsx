@@ -29,6 +29,16 @@ function PostsList() {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Check if user just created a post
+  useEffect(() => {
+    if (searchParams.get("created") === "true") {
+      setShowSuccess(true);
+      // Hide success message after 5 seconds
+      setTimeout(() => setShowSuccess(false), 5000);
+    }
+  }, [searchParams]);
 
   // Check if user is an admin
   useEffect(() => {
@@ -69,6 +79,32 @@ function PostsList() {
   return (
     <>
       <div className="w-full max-w-4xl mx-auto mb-8">
+        {/* Success Message */}
+        {showSuccess && (
+          <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <div className="flex items-center">
+              <svg
+                className="w-5 h-5 text-green-600 dark:text-green-400 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <p className="text-green-800 dark:text-green-200">
+                {isAdmin
+                  ? "Your post has been created and published successfully!"
+                  : "Your post has been created successfully! It's now pending approval and will be visible once reviewed by our moderation team."}
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold themed-span-primary">Posts</h1>
 
@@ -83,6 +119,25 @@ function PostsList() {
                     className="form-button py-2 px-4 flex items-center"
                   >
                     <span>New Post</span>
+                  </Link>
+                  <Link
+                    href="/posts/pending"
+                    className="py-2 px-4 flex items-center rounded-lg transition-colors bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/50"
+                  >
+                    <svg
+                      className="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>Pending Posts</span>
                   </Link>
                   <Link
                     href="/posts?filter=mine"

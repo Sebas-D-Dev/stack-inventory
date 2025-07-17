@@ -4,6 +4,10 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import GuidelineForm from "./GuidelineForm";
+import DeleteGuidelineButton from "./DeleteGuidelineButton";
+import { cn } from "@/lib/cn";
+import { buttonVariants } from "@/lib/button-variants";
+import { textVariants, cardVariants } from "@/lib/ui-variants";
 
 export default async function ContentGuidelinesPage() {
   // Check if user is admin
@@ -21,125 +25,141 @@ export default async function ContentGuidelinesPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold themed-span-primary">
+          <h1 className={cn(textVariants({ variant: "h1" }))}>
             Content Guidelines
           </h1>
-          <p className="themed-span-secondary">
+          <p className={cn(textVariants({ variant: "muted" }))}>
             Manage content guidelines for user-generated content
           </p>
         </div>
         <Link
           href="/admin/moderation"
-          className="px-4 py-2 rounded-lg transition-colors"
-          style={{
-            backgroundColor: "var(--button-background)",
-            color: "var(--button-foreground)",
-          }}
+          className={cn(buttonVariants({ variant: "outline" }))}
         >
           Back to Moderation
         </Link>
       </div>
 
       {/* Add New Guideline Form */}
-      <div
-        className="rounded-lg shadow-sm mb-8 p-6"
-        style={{
-          backgroundColor: "var(--card-background)",
-          borderColor: "var(--card-border)",
-          borderWidth: "1px",
-        }}
-      >
-        <h2
-          className="text-xl font-semibold mb-4"
-          style={{ color: "var(--text-primary)" }}
-        >
+      <div className={cn(cardVariants({ variant: "default" }), "mb-8 p-6")}>
+        <h2 className={cn(textVariants({ variant: "h3" }), "mb-4")}>
           Add New Guideline
         </h2>
         <GuidelineForm />
       </div>
 
       {/* Guidelines List */}
-      <div
-        className="rounded-lg shadow-sm"
-        style={{
-          backgroundColor: "var(--card-background)",
-          borderColor: "var(--card-border)",
-          borderWidth: "1px",
-        }}
-      >
-        <div
-          className="px-6 py-4 border-b"
-          style={{
-            borderColor: "var(--card-border)",
-          }}
-        >
-          <h2
-            className="text-xl font-semibold"
-            style={{ color: "var(--text-primary)" }}
-          >
-            Current Guidelines
+      <div className={cn(cardVariants({ variant: "default" }))}>
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className={cn(textVariants({ variant: "h3" }))}>
+            Current Guidelines ({guidelines.length})
           </h2>
         </div>
 
         {guidelines.length === 0 ? (
-          <div
-            className="p-6 text-center"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            No content guidelines have been defined
+          <div className="p-8 text-center">
+            <div className="max-w-md mx-auto">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <h3
+                className={cn(
+                  textVariants({ variant: "h3" }),
+                  "mt-4 text-lg font-semibold"
+                )}
+              >
+                No guidelines yet
+              </h3>
+              <p className={cn(textVariants({ variant: "muted" }), "mt-2")}>
+                Create your first content guideline to help users understand
+                community standards.
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="p-4">
-            <ul className="space-y-4">
-              {guidelines.map((guideline) => (
-                <li
+          <div className="p-6">
+            <div className="space-y-6">
+              {guidelines.map((guideline, index) => (
+                <div
                   key={guideline.id}
-                  className="p-4 rounded-lg border"
-                  style={{
-                    borderColor: "var(--card-border)",
-                    opacity: guideline.isActive ? 1 : 0.6,
-                  }}
+                  className={cn(
+                    "relative p-6 rounded-lg border border-gray-200 dark:border-gray-700",
+                    "bg-gray-50/50 dark:bg-gray-800/50",
+                    "transition-all duration-200 hover:shadow-md"
+                  )}
                 >
+                  {/* Guideline Number Badge */}
+                  <div className="absolute -top-3 -left-3 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                    {index + 1}
+                  </div>
+
                   <div className="flex justify-between items-start">
-                    <div>
-                      <h3
-                        className="text-lg font-medium mb-1"
-                        style={{ color: "var(--text-primary)" }}
-                      >
-                        {guideline.title}
-                      </h3>
-                      <p style={{ color: "var(--text-secondary)" }}>
-                        {guideline.description}
-                      </p>
+                    <div className="flex-1 pr-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <h3
+                          className={cn(
+                            textVariants({ variant: "h3" }),
+                            "text-lg font-semibold"
+                          )}
+                        >
+                          {guideline.title}
+                        </h3>
+                      </div>
+
+                      <div className="prose prose-sm dark:prose-invert max-w-none">
+                        <div
+                          className={cn(
+                            textVariants({ variant: "body" }),
+                            "whitespace-pre-line leading-relaxed"
+                          )}
+                          style={{ lineHeight: "1.6" }}
+                        >
+                          {guideline.description}
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                        <span>
+                          Created:{" "}
+                          {new Date(guideline.createdAt).toLocaleDateString()}
+                        </span>
+                        <span>•</span>
+                        <span>
+                          Updated:{" "}
+                          {new Date(guideline.updatedAt).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
+
+                    <div className="flex flex-col gap-2 min-w-fit">
                       <Link
                         href={`/admin/moderation/guidelines/${guideline.id}/edit`}
-                        className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800"
+                        className={cn(
+                          buttonVariants({ variant: "outline", size: "sm" })
+                        )}
                       >
                         Edit
                       </Link>
-                      <button
-                        className={`px-2 py-1 rounded text-xs ${
-                          guideline.isActive
-                            ? "bg-red-100 text-red-800"
-                            : "bg-green-100 text-green-800"
-                        }`}
-                      >
-                        {guideline.isActive ? "Disable" : "Enable"}
-                      </button>
+                      <DeleteGuidelineButton
+                        id={guideline.id}
+                        title={guideline.title}
+                      />
                     </div>
                   </div>
-                  <div
-                    className="mt-2 text-xs"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Last updated:{" "}
-                    {new Date(guideline.updatedAt).toLocaleString()}
-                  </div>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
       </div>

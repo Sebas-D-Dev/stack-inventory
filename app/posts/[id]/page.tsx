@@ -41,9 +41,10 @@ export default async function Post({
     notFound();
   }
 
-  // Check if the current user is the author of the post or an admin
+  // Check if the current user is the author of the post or an admin/moderator
   const isAuthor = userId === post.authorId;
-  const canEditOrDelete = isAuthor || isAdmin;
+  const isAdminOrModerator = isAdmin || session?.user?.role === "MODERATOR";
+  const canEditOrDelete = isAuthor || isAdminOrModerator;
 
   console.log("Authorization check:", {
     isAuthor,
@@ -51,6 +52,68 @@ export default async function Post({
     canEditOrDelete,
     postAuthorId: post.authorId,
   });
+
+  // Server action to mark post for review
+  async function markForReview() {
+    "use server";
+
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+
+    // Check if user is admin or moderator
+    const isAdminOrModerator =
+      session?.user?.isAdmin || session?.user?.role === "MODERATOR";
+
+    if (!isAdminOrModerator) {
+      throw new Error("Not authorized to moderate posts");
+    }
+
+    // Re-fetch the post to ensure it exists within this server action
+    const postToReview = await prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!postToReview) {
+      throw new Error("Post not found");
+    }
+
+    // Update post status to pending review
+    await prisma.post.update({
+      where: { id: postId },
+      data: {
+        modStatus: "PENDING",
+        published: false,
+        modReviewedAt: new Date(),
+        modReviewedBy: userId || "",
+        modReason: "Marked for further review",
+      },
+    });
+
+    // Create history entry
+    await prisma.postHistory.create({
+      data: {
+        postId: postId,
+        title: postToReview.title,
+        content: postToReview.content || "",
+        action: "MARK_FOR_REVIEW",
+        performedById: userId || "",
+      },
+    });
+
+    // Notify the author
+    if (postToReview.authorId) {
+      await prisma.notification.create({
+        data: {
+          userId: postToReview.authorId,
+          message: `Your post "${postToReview.title}" has been sent back for review`,
+          type: "POST_REVIEW_REQUIRED",
+          relatedId: postId.toString(),
+        },
+      });
+    }
+
+    redirect("/posts");
+  }
 
   // Server action to delete the post
   async function deletePost() {
@@ -140,6 +203,18 @@ export default async function Post({
           <>
             <EditButton editPath={`/posts/${id}/edit`} itemName="post" />
             <DeleteButton deleteAction={deletePost} itemName="post" />
+            {isAdminOrModerator &&
+              !isAuthor &&
+              post.modStatus === "APPROVED" && (
+                <form action={markForReview} className="inline">
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-lg transition-colors bg-yellow-600 hover:bg-yellow-700 text-white"
+                  >
+                    Mark for Review
+                  </button>
+                </form>
+              )}
           </>
         ) : null}
       </div>

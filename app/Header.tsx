@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { canAccessAdminFeatures } from "@/lib/permissions";
+import { canAccessAdminFeatures, canModerateContent } from "@/lib/permissions";
 import { cn } from "@/lib/cn";
 import { buttonVariants } from "@/lib/button-variants";
 import logoImage from "./logo.png";
@@ -149,7 +149,8 @@ export default function Header() {
                 </Link>
               )}
               {session?.user &&
-                canAccessAdminFeatures(session.user.role || "") && (
+                canAccessAdminFeatures(session.user.role || "") &&
+                session.user.isAdmin && (
                   <Link
                     href="/admin/dashboard"
                     className={cn(buttonVariants({ variant: "default" }))}
@@ -157,6 +158,14 @@ export default function Header() {
                     Admin Dashboard
                   </Link>
                 )}
+              {session?.user && canModerateContent(session.user.role || "") && (
+                <Link
+                  href="/admin/moderation"
+                  className={cn(buttonVariants({ variant: "outline" }))}
+                >
+                  Moderation
+                </Link>
+              )}
             </>
           )}
         </div>

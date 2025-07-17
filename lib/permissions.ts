@@ -21,7 +21,11 @@ export function hasMinimumRole(userRole: string, requiredRole: Role): boolean {
 
 // Specific permission functions
 export function canAccessAdminFeatures(role: string): boolean {
-  return hasMinimumRole(role, 'ADMIN');
+  return hasMinimumRole(role, 'ADMIN'); // Only admins and above can access admin dashboard
+}
+
+export function canAccessAdminDashboard(role: string): boolean {
+  return hasMinimumRole(role, 'ADMIN'); // Only admins and above
 }
 
 export function canModerateContent(role: string): boolean {

@@ -4,12 +4,12 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 
-import { canAccessAdminFeatures } from "@/lib/permissions";
+import { canAccessAdminDashboard } from "@/lib/permissions";
 
 export default async function AdminProductManagement() {
   // Check if user has admin access
   const session = await getServerSession(authOptions);
-  if (!session?.user || !canAccessAdminFeatures(session.user.role || "")) {
+  if (!session?.user || !canAccessAdminDashboard(session.user.role || "")) {
     redirect("/");
   }
 

@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { redirect, notFound } from "next/navigation";
 import { authOptions } from "@/auth";
-import { canAccessAdminFeatures } from "@/lib/permissions";
+import { canAccessAdminDashboard } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import OrderEditForm from "./OrderEditForm";
 
@@ -14,7 +14,7 @@ export default async function OrderEditPage({ params }: OrderEditPageProps) {
 
   // Check if user can access admin features
   const session = await getServerSession(authOptions);
-  if (!session?.user || !canAccessAdminFeatures(session.user.role || "")) {
+  if (!session?.user || !canAccessAdminDashboard(session.user.role || "")) {
     redirect("/");
   }
 

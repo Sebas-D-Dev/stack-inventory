@@ -39,18 +39,35 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
+  // Get the user token
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET
+  });
+  
+  // Check if accessing admin routes
+  if (pathname.startsWith('/admin')) {
+    if (!token) {
+      const url = new URL('/login', request.url);
+      url.searchParams.set('callbackUrl', encodeURI(pathname));
+      return NextResponse.redirect(url);
+    }
+    
+    // Check if user is admin or moderator
+    const isAdminOrModerator = token.isAdmin || token.role === 'MODERATOR';
+    
+    if (!isAdminOrModerator) {
+      // Redirect non-admin/non-moderator users to dashboard
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+  }
+  
   // Check if the path needs protection
   const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path)) || 
     // Also protect root paths like /posts/1
     (pathname !== '/' && pathname !== '/posts' && !pathname.startsWith('/posts/') && !pathname.includes('.'));
   
   if (isProtectedPath) {
-    // Get the user token
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET
-    });
-    
     // If no token, redirect to login
     if (!token) {
       const url = new URL('/login', request.url);

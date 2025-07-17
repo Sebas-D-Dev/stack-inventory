@@ -39,7 +39,7 @@ export async function createPost(formData: FormData) {
 
   // If user is not an admin, create a notification for admins
   if (!isAdmin) {
-    // Find all admin users
+    // Find all admin users using the Admin table
     const admins = await prisma.admin.findMany({
       select: { userId: true }
     });
@@ -56,9 +56,10 @@ export async function createPost(formData: FormData) {
       });
     }
     
-    // Redirect to a "pending approval" page instead
-    redirect("/posts/pending");
+    // Redirect to a "pending approval" page with success message
+    redirect("/posts/pending?created=true");
   }
 
-  redirect("/posts");
+  // If admin, redirect to posts page with success message
+  redirect("/posts?created=true");
 }

@@ -42,28 +42,69 @@ export async function createGuideline(data: GuidelineData) {
   revalidatePath("/admin/moderation/guidelines");
 }
 
-export async function toggleGuidelineStatus(id: string, active: boolean) {
+export async function updateGuideline(id: string, data: GuidelineData) {
   // Verify the current user is an admin
   const session = await getServerSession(authOptions);
   if (!session?.user?.isAdmin) {
     throw new Error("Unauthorized");
   }
 
-  // Update the guideline status
+  // Update the guideline
   await prisma.contentGuideline.update({
     where: { id },
-    data: { isActive: active },
+    data: {
+      title: data.title,
+      description: data.description,
+    },
   });
 
   // Log the activity
   await prisma.activityLog.create({
     data: {
       userId: session.user.id,
-      action: active ? "ENABLE_GUIDELINE" : "DISABLE_GUIDELINE",
+      action: "UPDATE_GUIDELINE",
       entityType: "CONTENT_GUIDELINE",
       entityId: id,
       details: JSON.stringify({
-        status: active ? "enabled" : "disabled",
+        title: data.title,
+      }),
+    },
+  });
+
+  revalidatePath("/admin/moderation/guidelines");
+}
+
+export async function deleteGuideline(id: string) {
+  // Verify the current user is an admin
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
+  // Get guideline info before deletion for logging
+  const guideline = await prisma.contentGuideline.findUnique({
+    where: { id },
+    select: { title: true },
+  });
+
+  if (!guideline) {
+    throw new Error("Guideline not found");
+  }
+
+  // Delete the guideline
+  await prisma.contentGuideline.delete({
+    where: { id },
+  });
+
+  // Log the activity
+  await prisma.activityLog.create({
+    data: {
+      userId: session.user.id,
+      action: "DELETE_GUIDELINE",
+      entityType: "CONTENT_GUIDELINE",
+      entityId: id,
+      details: JSON.stringify({
+        title: guideline.title,
       }),
     },
   });

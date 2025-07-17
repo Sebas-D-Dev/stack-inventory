@@ -13,7 +13,10 @@ import { canModerateContent } from "@/lib/permissions";
 export default async function ContentModerationPage() {
   // Check if user can moderate content
   const session = await getServerSession(authOptions);
-  if (!session?.user || !canModerateContent(session.user.role || "")) {
+  if (
+    !session?.user ||
+    (!session.user.isAdmin && !canModerateContent(session.user.role || ""))
+  ) {
     redirect("/");
   }
 
@@ -163,6 +166,11 @@ export default async function ContentModerationPage() {
                           id={post.id.toString()}
                           type="post"
                           action="approve"
+                        />
+                        <ModerateButton
+                          id={post.id.toString()}
+                          type="post"
+                          action="send-for-review"
                         />
                         <ModerateButton
                           id={post.id.toString()}

@@ -15,6 +15,10 @@ export default async function Home() {
   }
 
   const posts = await prisma.post.findMany({
+    where: {
+      modStatus: "APPROVED",
+      published: true,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -35,8 +39,12 @@ export default async function Home() {
         {posts.map((post) => (
           <Link key={post.id} href={`/posts/${post.id}`} className="group">
             <div className="border rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
-              <h2 className="text-2xl font-semibold group-hover:underline mb-2">{post.title}</h2>
-              <p className="text-sm">by {post.author ? post.author.name : "Anonymous"}</p>
+              <h2 className="text-2xl font-semibold group-hover:underline mb-2">
+                {post.title}
+              </h2>
+              <p className="text-sm">
+                by {post.author ? post.author.name : "Anonymous"}
+              </p>
               <p className="text-xs mb-4">
                 {new Date(post.createdAt).toLocaleDateString("en-US", {
                   year: "numeric",
@@ -45,7 +53,9 @@ export default async function Home() {
                 })}
               </p>
               <div className="relative">
-                <p className="leading-relaxed line-clamp-2">{post.content || "No content available."}</p>
+                <p className="leading-relaxed line-clamp-2">
+                  {post.content || "No content available."}
+                </p>
               </div>
             </div>
           </Link>
