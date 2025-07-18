@@ -5,11 +5,12 @@ export default function SetupPage() {
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
       <div className="max-w-3xl w-full rounded-lg shadow-lg p-8">
         <h1 className="text-3xl font-bold text-center mb-6">
-          Welcome to Superblog
+          Welcome to Stack Inventory
         </h1>
         <p className="mb-8 text-center">
           It looks like your database isn&apos;t set up yet. Follow the
-          instructions below to get started.
+          instructions below to get started with your AI-powered inventory
+          management system.
         </p>
 
         <SetupInstructions />

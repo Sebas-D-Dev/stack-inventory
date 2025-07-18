@@ -3,6 +3,7 @@ import Header from "./Header";
 import Footer from "./Footer"
 import Providers from "./providers";
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata = {
   title: "Stack Inventory",
@@ -26,6 +27,7 @@ export default function RootLayout({
           </div>
         </Providers>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
