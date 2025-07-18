@@ -2,6 +2,7 @@ import "./globals.css";
 import Header from "./Header";
 import Footer from "./Footer"
 import Providers from "./providers";
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata = {
   title: "Stack Inventory",
@@ -24,6 +25,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
