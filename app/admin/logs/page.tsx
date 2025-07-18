@@ -167,13 +167,13 @@ export default async function ActivityLogsPage({
   };
 
   // Process insights data
-  const processedTopActions = topActions.map((action) => ({
+  const processedTopActions = (topActions as Array<{ action: string; _count: { action: number } }>).map((action) => ({
     action: action.action,
     count: action._count.action,
   }));
 
   const usersMap = new Map(allUsers.map((user) => [user.id, user]));
-  const processedTopUsers = topUsers
+  const processedTopUsers = (topUsers as Array<{ userId: string; _count: { userId: number } }>)
     .map((userStat) => {
       const user = usersMap.get(userStat.userId);
       return user
