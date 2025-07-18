@@ -47,7 +47,7 @@ export default async function AdminDashboard() {
         <Link
           href="/admin/users"
           className={cn(
-            cardVariants({ variant: "default" }),
+            cardVariants({ variant: "secondary" }),
             "hover:shadow-md transition-shadow block"
           )}
         >
@@ -61,24 +61,27 @@ export default async function AdminDashboard() {
         </Link>
 
         <Link
-          href="/admin/posts/history"
+          href="/admin/orders"
           className={cn(
-            cardVariants({ variant: "default" }),
+            cardVariants({ variant: "secondary" }),
             "hover:shadow-md transition-shadow block"
           )}
         >
           <h3 className={cn(textVariants({ variant: "h3" }), "mb-2")}>
-            Post History
+            Order Management
           </h3>
           <p className={cn(textVariants({ variant: "muted" }))}>
-            View all content change history
+            Manage and approve purchase orders
+          </p>
+          <p className="mt-4 text-3xl font-bold text-purple-600">
+            {totalOrders}
           </p>
         </Link>
 
         <Link
           href="/admin/products"
           className={cn(
-            cardVariants({ variant: "default" }),
+            cardVariants({ variant: "secondary" }),
             "hover:shadow-md transition-shadow block"
           )}
         >
@@ -94,106 +97,91 @@ export default async function AdminDashboard() {
         </Link>
 
         <Link
-          href="/admin/orders"
-          className="p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          style={{
-            backgroundColor: "var(--card-background)",
-            borderColor: "var(--card-border)",
-            borderWidth: "1px",
-          }}
+          href="/admin/posts/history"
+          className={cn(
+            cardVariants({ variant: "secondary" }),
+            "hover:shadow-md transition-shadow block"
+          )}
         >
-          <h3 className="text-xl font-medium mb-2 themed-span-primary">
-            Order Management
+          <h3 className={cn(textVariants({ variant: "h3" }), "mb-2")}>
+            Post History
           </h3>
-          <p style={{ color: "var(--text-secondary)" }}>
-            Manage and approve purchase orders
-          </p>
-          <p className="mt-4 text-3xl font-bold text-purple-600">
-            {totalOrders}
+          <p className={cn(textVariants({ variant: "muted" }))}>
+            View all content change history
           </p>
         </Link>
 
         <Link
           href="/admin/system"
-          className="p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          style={{
-            backgroundColor: "var(--card-background)",
-            borderColor: "var(--card-border)",
-            borderWidth: "1px",
-          }}
+          className={cn(
+            cardVariants({ variant: "secondary" }),
+            "hover:shadow-md transition-shadow block"
+          )}
         >
-          <h3 className="text-xl font-medium mb-2 themed-span-primary">
+          <h3 className={cn(textVariants({ variant: "h3" }), "mb-2")}>
             System Settings
           </h3>
-          <p style={{ color: "var(--text-secondary)" }}>
+          <p className={cn(textVariants({ variant: "muted" }))}>
             Configure system-wide settings
           </p>
         </Link>
 
         <Link
           href="/admin/logs"
-          className="p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          style={{
-            backgroundColor: "var(--card-background)",
-            borderColor: "var(--card-border)",
-            borderWidth: "1px",
-          }}
+          className={cn(
+            cardVariants({ variant: "secondary" }),
+            "hover:shadow-md transition-shadow block"
+          )}
         >
-          <h3 className="text-xl font-medium mb-2 themed-span-primary">
+          <h3 className={cn(textVariants({ variant: "h3" }), "mb-2")}>
             Activity Logs
           </h3>
-          <p style={{ color: "var(--text-secondary)" }}>
+          <p className={cn(textVariants({ variant: "muted" }))}>
             System-wide audit logs
           </p>
         </Link>
 
         <Link
           href="/admin/moderation"
-          className="p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          style={{
-            backgroundColor: "var(--card-background)",
-            borderColor: "var(--card-border)",
-            borderWidth: "1px",
-          }}
+          className={cn(
+            cardVariants({ variant: "secondary" }),
+            "hover:shadow-md transition-shadow block"
+          )}
         >
-          <h3 className="text-xl font-medium mb-2 themed-span-primary">
+          <h3 className={cn(textVariants({ variant: "h3" }), "mb-2")}>
             Content Moderation
           </h3>
-          <p style={{ color: "var(--text-secondary)" }}>
+          <p className={cn(textVariants({ variant: "muted" }))}>
             Review and approve user-generated content
           </p>
         </Link>
 
         <Link
           href="/admin/price-forecasting"
-          className="p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          style={{
-            backgroundColor: "var(--card-background)",
-            borderColor: "var(--card-border)",
-            borderWidth: "1px",
-          }}
+          className={cn(
+            cardVariants({ variant: "secondary" }),
+            "hover:shadow-md transition-shadow block"
+          )}
         >
-          <h3 className="text-xl font-medium mb-2 themed-span-primary">
+          <h3 className={cn(textVariants({ variant: "h3" }), "mb-2")}>
             Price Forecasting
           </h3>
-          <p style={{ color: "var(--text-secondary)" }}>
+          <p className={cn(textVariants({ variant: "muted" }))}>
             Analyze and forecast product pricing
           </p>
         </Link>
 
         <Link
           href="/inventory-assistant"
-          className="p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          style={{
-            backgroundColor: "var(--card-background)",
-            borderColor: "var(--card-border)",
-            borderWidth: "1px",
-          }}
+          className={cn(
+            cardVariants({ variant: "secondary" }),
+            "hover:shadow-md transition-shadow block"
+          )}
         >
-          <h3 className="text-xl font-medium mb-2 themed-span-primary">
+          <h3 className={cn(textVariants({ variant: "h3" }), "mb-2")}>
             AI Inventory Assistant
           </h3>
-          <p style={{ color: "var(--text-secondary)" }}>
+          <p className={cn(textVariants({ variant: "muted" }))}>
             Chat with AI about inventory management (Available to all users)
           </p>
         </Link>
