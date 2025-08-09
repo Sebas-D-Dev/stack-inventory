@@ -12,6 +12,8 @@ interface Vendor {
   };
 }
 
+// The Vendor interface is used in the useState and in vendors.map to display vendor.name
+
 // Disable static generation
 export const dynamic = "force-dynamic";
 

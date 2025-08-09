@@ -4,8 +4,9 @@ type SettingCategory = 'email' | 'inventory' | 'workingHours' | 'backup';
 
 export async function getSettings(category?: SettingCategory) {
   try {
-    const query = category ? { where: { category } } : {};
-    const settings = await prisma.systemSetting.findMany(query);
+    const settings = category 
+      ? await prisma.systemSetting.findMany({ where: { category } })
+      : await prisma.systemSetting.findMany();
     
     // Convert to a key-value object
     return settings.reduce<Record<string, string>>((acc, setting) => {

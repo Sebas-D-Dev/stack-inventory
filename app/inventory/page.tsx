@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Product } from "@prisma/client";
 
 export default function AdjustInventory() {
@@ -12,17 +12,46 @@ export default function AdjustInventory() {
   const [type, setType] = useState("ADJUSTMENT");
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     async function fetchProducts() {
       const response = await fetch("/api/products");
       const data = await response.json();
-      setProducts(data.products); // ✅ Correctly access the products array
+      setProducts(data.products);
       setIsLoading(false);
     }
 
     fetchProducts();
   }, []);
+
+  // Pre-populate form based on URL parameters
+  useEffect(() => {
+    const productId = searchParams.get("productId");
+    const adjustmentType = searchParams.get("adjustmentType");
+
+    if (productId) {
+      setSelectedProduct(productId);
+    }
+
+    if (adjustmentType) {
+      // Map the adjustmentType to the correct form value
+      const typeMap: Record<string, string> = {
+        Purchase: "PURCHASE",
+        Sale: "SALE",
+        Return: "RETURN",
+        Loss: "LOSS",
+        Adjustment: "ADJUSTMENT",
+      };
+
+      setType(typeMap[adjustmentType] || "ADJUSTMENT");
+
+      // Set default reason based on type
+      if (adjustmentType === "Purchase") {
+        setReason("Restocking low inventory");
+      }
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

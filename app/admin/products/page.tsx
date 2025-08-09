@@ -3,7 +3,6 @@ import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-
 import { canAccessAdminDashboard } from "@/lib/permissions";
 
 export default async function AdminProductManagement() {
@@ -13,7 +12,7 @@ export default async function AdminProductManagement() {
     redirect("/");
   }
 
-  // Fetch products that need approval
+  // Fetch products that need attention
   const productsNeedingAttention = await prisma.product.findMany({
     where: {
       OR: [
@@ -27,6 +26,9 @@ export default async function AdminProductManagement() {
     },
     orderBy: { quantity: "asc" },
   });
+
+  // Temporary debug log
+  console.log('First product:', productsNeedingAttention[0]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -145,7 +147,8 @@ export default async function AdminProductManagement() {
               </tr>
             </thead>
             <tbody>
-              {productsNeedingAttention.map((product) => (
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {productsNeedingAttention.map((product: any) => (
                 <tr key={product.id}>
                   <td
                     className="px-6 py-4 whitespace-nowrap text-sm font-medium"
@@ -163,13 +166,13 @@ export default async function AdminProductManagement() {
                     className="px-6 py-4 whitespace-nowrap text-sm"
                     style={{ color: "var(--text-primary)" }}
                   >
-                    {product.category.name}
+                    {product.category?.name || 'No category'}
                   </td>
                   <td
                     className="px-6 py-4 whitespace-nowrap text-sm"
                     style={{ color: "var(--text-primary)" }}
                   >
-                    {product.vendor.name}
+                    {product.vendor?.name || 'No vendor'}
                   </td>
                   <td
                     className="px-6 py-4 whitespace-nowrap text-sm"
@@ -193,7 +196,7 @@ export default async function AdminProductManagement() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                     <Link
-                      href={`/admin/products/${product.id}/restock`}
+                      href={`/inventory?productId=${product.id}&adjustmentType=Purchase`}
                       className="px-3 py-1 rounded text-sm"
                       style={{
                         backgroundColor: "var(--success-light)",

@@ -167,13 +167,16 @@ export default async function ActivityLogsPage({
   };
 
   // Process insights data
-  const processedTopActions = (topActions as Array<{ action: string; _count: { action: number } }>).map((action) => ({
+  type TopAction = { action: string; _count: { action: number } };
+  type TopUser = { userId: string; _count: { userId: number } };
+
+  const processedTopActions = (topActions as TopAction[]).map((action) => ({
     action: action.action,
     count: action._count.action,
   }));
 
   const usersMap = new Map(allUsers.map((user) => [user.id, user]));
-  const processedTopUsers = (topUsers as Array<{ userId: string; _count: { userId: number } }>)
+  const processedTopUsers = (topUsers as TopUser[])
     .map((userStat) => {
       const user = usersMap.get(userStat.userId);
       return user
