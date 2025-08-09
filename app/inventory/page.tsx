@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Product } from "@prisma/client";
 
-export default function AdjustInventory() {
+function AdjustInventoryContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState("");
   const [quantity, setQuantity] = useState(0);
@@ -191,5 +191,20 @@ export default function AdjustInventory() {
         </form>
       )}
     </div>
+  );
+}
+
+export default function AdjustInventory() {
+  return (
+    <Suspense
+      fallback={
+        <div className="themed-loading-container">
+          <div className="themed-spinner"></div>
+          <p className="themed-loading-text">Loading...</p>
+        </div>
+      }
+    >
+      <AdjustInventoryContent />
+    </Suspense>
   );
 }

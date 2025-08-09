@@ -128,6 +128,24 @@ export default async function Dashboard() {
             </Link>
           </div>
         </div>
+
+        {/* Data Management Actions */}
+        <div className="flex flex-col gap-2">
+          <h3
+            className="text-sm font-medium"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Data Management
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/xml-integration"
+              className="form-button py-2 px-4 flex items-center"
+            >
+              <span>XML Import/Export</span>
+            </Link>
+          </div>
+        </div>
       </div>
 
       <Suspense fallback={<DashboardLoading />}>
